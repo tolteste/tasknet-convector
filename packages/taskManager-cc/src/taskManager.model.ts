@@ -7,21 +7,40 @@ import {
   Validate
 } from '@worldsibu/convector-core-model';
 
-export class TaskManager extends ConvectorModel<TaskManager> {
+export class Task extends ConvectorModel<Task> {
   @ReadOnly()
   @Required()
-  public readonly type = 'io.worldsibu.taskManager';
+  public readonly type = 'io.worldsibu.task';
 
   @Required()
   @Validate(yup.string())
-  public name: string;
+  public title: string;
+
+  @Required()
+  @Validate(yup.string())
+  public description: string;
+
+  @Required()
+  public state: TaskState;
 
   @ReadOnly()
   @Required()
-  @Validate(yup.number())
-  public created: number;
+  @Validate(yup.date())
+  public created: Date;
 
+  @ReadOnly()
   @Required()
-  @Validate(yup.number())
-  public modified: number;
+  public creator: User;
+}
+
+enum TaskState {
+  MODIFIABLE,
+  IN_PROGRESS,
+  IN_REVISION,
+  COMPLETED,
+  CANCELED
+}
+
+export class User extends ConvectorModel<User> {
+
 }
