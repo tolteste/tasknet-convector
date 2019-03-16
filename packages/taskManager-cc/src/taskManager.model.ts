@@ -42,5 +42,15 @@ enum TaskState {
 }
 
 export class User extends ConvectorModel<User> {
+  @Required()
+  @Validate(yup.string())
+  public name: string;
+
+  @Required()
+  @Validate(yup.string())
+  public surname: string;
+
+  @Required()
+  public email: string;
 
 }
