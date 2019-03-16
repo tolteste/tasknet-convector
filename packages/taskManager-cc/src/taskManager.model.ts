@@ -42,6 +42,10 @@ enum TaskState {
 }
 
 export class User extends ConvectorModel<User> {
+  @ReadOnly()
+  @Required()
+  public readonly type = 'io.worldsibu.user';
+
   @Required()
   @Validate(yup.string())
   public name: string;
