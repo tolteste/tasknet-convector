@@ -10,7 +10,7 @@ import {
 export class Task extends ConvectorModel<Task> {
   @ReadOnly()
   @Required()
-  public readonly type = 'io.worldsibu.task';
+  public readonly type = 'edu.taskmanager.task';
 
   @Required()
   @Validate(yup.string())
@@ -21,19 +21,20 @@ export class Task extends ConvectorModel<Task> {
   public description: string;
 
   @Required()
+  @Validate(yup.TaskState())
   public state: TaskState;
 
   @ReadOnly()
   @Required()
   @Validate(yup.date())
-  public created: Date;
+  public created: number;
 
   @ReadOnly()
   @Required()
-  public creator: User;
+  public creator: string;
 }
 
-enum TaskState {
+export enum TaskState {
   MODIFIABLE,
   IN_PROGRESS,
   IN_REVISION,
@@ -44,7 +45,7 @@ enum TaskState {
 export class User extends ConvectorModel<User> {
   @ReadOnly()
   @Required()
-  public readonly type = 'io.worldsibu.user';
+  public readonly type = 'edu.taskmanger.user';
 
   @Required()
   @Validate(yup.string())
@@ -53,8 +54,4 @@ export class User extends ConvectorModel<User> {
   @Required()
   @Validate(yup.string())
   public surname: string;
-
-  @Required()
-  public email: string;
-
 }
