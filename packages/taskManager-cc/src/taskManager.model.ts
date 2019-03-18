@@ -7,6 +7,14 @@ import {
   Validate
 } from '@worldsibu/convector-core-model';
 
+export enum TaskState {
+  MODIFIABLE,
+  IN_PROGRESS,
+  IN_REVISION,
+  COMPLETED,
+  CANCELED
+}
+
 export class Task extends ConvectorModel<Task> {
   @ReadOnly()
   @Required()
@@ -21,7 +29,7 @@ export class Task extends ConvectorModel<Task> {
   public description: string;
 
   @Required()
-  @Validate(yup.TaskState())
+  @Validate(yup.number())
   public state: TaskState;
 
   @ReadOnly()
@@ -31,15 +39,11 @@ export class Task extends ConvectorModel<Task> {
 
   @ReadOnly()
   @Required()
+  @Validate(yup.string)
   public creator: string;
-}
 
-export enum TaskState {
-  MODIFIABLE,
-  IN_PROGRESS,
-  IN_REVISION,
-  COMPLETED,
-  CANCELED
+  @Validate(yup.array().of(yup.string()))
+  public prerequisties: string[];
 }
 
 export class User extends ConvectorModel<User> {
