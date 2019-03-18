@@ -70,7 +70,10 @@ var TaskManagerController = (function (_super) {
                         if (_a.sent()) {
                             task.prerequisties = prereq;
                         }
-                        return [2, task.save()];
+                        return [4, task.save()];
+                    case 3:
+                        _a.sent();
+                        return [2, 'taskh'];
                 }
             });
         });
