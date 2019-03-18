@@ -24,7 +24,9 @@ export class TaskManagerController extends ConvectorController {
     @Param(yup.string().required().trim())
     title: string,
     @Param(yup.string().required().trim())
-    description: string
+    description: string,
+    @Param(yup.array().of(yup.string()))
+    prereq: string[] = []
   ) {
     var id = uuid();
     // Checking for colisions
@@ -40,6 +42,11 @@ export class TaskManagerController extends ConvectorController {
     task.description = description;
     task.state = TaskState.MODIFIABLE;
     task.created = Date.now();
+    if (this.arePrerequisitesValid(prereq)) {
+      task.prerequisties = prereq;
+    } else {
+      return
+    }
     // Creator is set to a certificate fingerprint of a sender
     task.creator = this.sender;
     await task.save();
@@ -55,11 +62,11 @@ export class TaskManagerController extends ConvectorController {
     @Param(yup.string())
     description: string,
     @Param(yup.array().of(yup.string()))
-    prereq: string[] = ['']
+    prereq: string[] = []
   ) {
     const task = await Task.getOne(id);
     if (task.creator !== this.sender) {
-      throw new Error('Only creator of the task is able to make modifications.')
+      throw new Error('Only creator of the task is able to make modifications.');
     }
 
     if (title.length > 0) {
@@ -69,11 +76,29 @@ export class TaskManagerController extends ConvectorController {
       task.description = description.trim();
     }
 
-    //if(prereq.length > 0){
-      //if(task.prerequisties.indexOf(id))
-      //task.prerequisties = prereq;
-   // }
-
+    if (prereq.indexOf(id) !== -1) {
+      throw new Error('Task can\'t have itself as prerequisite');
+    }
+    if (await this.arePrerequisitesValid(prereq)) {
+      task.prerequisties = prereq;
+    }
     return task.save();
+  }
+
+  private async arePrerequisitesValid(prerequisties: string[]): Promise<boolean> {
+    if (prerequisties.length === 0) {
+      return true;
+    }
+
+    const tasks = await Task.getAll();
+    prerequisties.forEach(function (id) {
+      let task = tasks.find(function (task) {
+        return task.id === id;
+      });
+      if (typeof task === 'undefined') {
+        throw new Error(`Task with id: ${id} does not exists so it can't be set as prerequisite.`);
+      }
+    });
+    return true;
   }
 }

@@ -29,10 +29,12 @@ export class TaskManagerControllerClient extends ConvectorController {
     
     title: string,
     
-    description: string
+    description: string,
+    
+    prereq: string[] = []
   ) {
 
-           return await this.adapter.invoke(this.name, 'create', this.user, title, description);
+           return await this.adapter.invoke(this.name, 'create', this.user, title, description, prereq);
          
    }
 
@@ -45,7 +47,7 @@ export class TaskManagerControllerClient extends ConvectorController {
     
     description: string,
     
-    prereq: string[] = ['']
+    prereq: string[] = []
   ) {
 
           return await this.adapter.invoke(this.name, 'modify', this.user, id, title, description, prereq);
