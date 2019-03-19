@@ -83,7 +83,7 @@ export class TaskManagerController extends ConvectorController {
       task.prerequisties = prereq;
     }
     await task.save();
-    return 'taskh'
+    return task
   }
 
   private async arePrerequisitesValid(prerequisties: string[]): Promise<boolean> {

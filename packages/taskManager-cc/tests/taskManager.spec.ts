@@ -16,6 +16,7 @@ describe('TaskManager', () => {
   let idCreatedTask2 = null;
   let adapter: MockControllerAdapter;
   let taskManagerCtrl: TaskManagerControllerClient;
+  const mockIdentity = 'B6:0B:37:7C:DF:D2:7A:08:0B:98:BF:52:A4:2C:DC:4E:CC:70:91:E1';
 
   before(async () => {
     adapter = new MockControllerAdapter();
@@ -66,5 +67,26 @@ describe('TaskManager', () => {
   it('should throw an error when assigning itself as prerequisite', async () => {
     await chai.expect(taskManagerCtrl.modify(idCreatedTask, "", "", [idCreatedTask]))
       .to.eventually.be.rejectedWith('Task can\'t have itself as prerequisite');
+  });
+
+  it('should throw an error when user that did not created the task wants to make a modification', async () => {
+    (adapter.stub as any).usercert = '-----BEGIN CERTIFICATE-----' +
+      'MIICjzCCAjWgAwIBAgIUITsRsw5SIJ+33SKwM4j1Dl4cDXQwCgYIKoZIzj0EAwIw' +
+      'czELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh' +
+      'biBGcmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMT' +
+      'E2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTgwODEzMDEyOTAwWhcNMTkwODEzMDEz' +
+      'NDAwWjBCMTAwDQYDVQQLEwZjbGllbnQwCwYDVQQLEwRvcmcxMBIGA1UECxMLZGVw' +
+      'YXJ0bWVudDExDjAMBgNVBAMTBXVzZXIzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcD' +
+      'QgAEcrfc0HHq5LG1UbyPSRLNjIQKqYoNY7/zPFC3UTJi3TTaIEqgVL6DF/8JIKuj' +
+      'IT/lwkuemafacXj8pdPw3Zyqs6OB1zCB1DAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0T' +
+      'AQH/BAIwADAdBgNVHQ4EFgQUHFUlW/XJC7VcJe5pLFkz+xlMNpowKwYDVR0jBCQw' +
+      'IoAgQ3hSDt2ktmSXZrQ6AY0EK2UHhXMx8Yq6O7XiA+X6vS4waAYIKgMEBQYHCAEE' +
+      'XHsiYXR0cnMiOnsiaGYuQWZmaWxpYXRpb24iOiJvcmcxLmRlcGFydG1lbnQxIiwi' +
+      'aGYuRW5yb2xsbWVudElEIjoidXNlcjMiLCJoZi5UeXBlIjoiY2xpZW50In19MAoG' +
+      'CCqGSM49BAMCA0gAMEUCIQCNsmDjOXF/NvciSZebfk2hfSr/v5CqRD7pIHCq3lIR' +
+      'lwIgPC/qGM1yeVinfN0z7M68l8rWn4M4CVR2DtKMpk3G9k9=' +
+      '-----END CERTIFICATE-----';
+    await chai.expect(taskManagerCtrl.modify(idCreatedTask, "Test", "", [idCreatedTask]))
+      .to.eventually.be.rejectedWith('Only creator of the task is able to make modifications.');
   });
 });

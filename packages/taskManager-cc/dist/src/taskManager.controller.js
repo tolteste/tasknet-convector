@@ -73,7 +73,7 @@ var TaskManagerController = (function (_super) {
                         return [4, task.save()];
                     case 3:
                         _a.sent();
-                        return [2, 'taskh'];
+                        return [2, task];
                 }
             });
         });
