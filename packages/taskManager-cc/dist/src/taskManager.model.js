@@ -42,34 +42,12 @@ var Task = (function (_super) {
     tslib_1.__decorate([
         convector_core_model_1.ReadOnly(),
         convector_core_model_1.Required(),
-        convector_core_model_1.Validate(yup.string)
+        convector_core_model_1.Validate(yup.string())
     ], Task.prototype, "creator", void 0);
     tslib_1.__decorate([
         convector_core_model_1.Validate(yup.array().of(yup.string()))
-    ], Task.prototype, "prerequisties", void 0);
+    ], Task.prototype, "prerequisites", void 0);
     return Task;
 }(convector_core_model_1.ConvectorModel));
 exports.Task = Task;
-var User = (function (_super) {
-    tslib_1.__extends(User, _super);
-    function User() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.type = 'edu.taskmanger.user';
-        return _this;
-    }
-    tslib_1.__decorate([
-        convector_core_model_1.ReadOnly(),
-        convector_core_model_1.Required()
-    ], User.prototype, "type", void 0);
-    tslib_1.__decorate([
-        convector_core_model_1.Required(),
-        convector_core_model_1.Validate(yup.string())
-    ], User.prototype, "name", void 0);
-    tslib_1.__decorate([
-        convector_core_model_1.Required(),
-        convector_core_model_1.Validate(yup.string())
-    ], User.prototype, "surname", void 0);
-    return User;
-}(convector_core_model_1.ConvectorModel));
-exports.User = User;
 //# sourceMappingURL=taskManager.model.js.map

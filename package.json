@@ -11,13 +11,13 @@
     "env:restart": "hurl new",
     "test": "npm-run-all -s lerna:test",
     "env:clean": "hurl clean",
-    "cc:start": "f() { npm run cc:package -- $1 org1; npm run cc:install $1; }; f",
-    "cc:upgrade": "f() { npm run cc:package -- $1 org1; hurl upgrade $1 node $2  -P ./chaincode-$1; }; f",
+    "cc:start": "f() { npm run cc:package; npm run cc:install; }; f",
+    "cc:upgrade": "f() { npm run cc:package; hurl upgrade taskManager node $1  -P ./chaincode-taskManager; }; f",
     "===================INTERNALS===================": "===================NO NEED TO CALL THEM DIRECTLY===================",
     "lerna:install": "lerna bootstrap",
     "lerna:build": "lerna run build",
-    "cc:package": "f() { npm run lerna:build; chaincode-manager --config ./$2.$1.config.json --output ./chaincode-$1 package; }; f",
-    "cc:install": "f() { hurl install $1 node -P ./chaincode-$1; }; f",
+    "cc:package": "f() { npm run lerna:build; chaincode-manager --config ./org1.taskManager.config.json --output ./chaincode-taskManager package; }; f",
+    "cc:install": "f() { hurl install identities node -P ./chaincode-taskManager; }; f",
     "lerna:test": "lerna exec npm run test"
   },
   "devDependencies": {

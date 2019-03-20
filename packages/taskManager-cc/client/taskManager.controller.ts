@@ -8,7 +8,8 @@ import {
   Param
 } from '@worldsibu/convector-core-controller';
 
-import { Task, User, TaskState } from '../src/taskManager.model';
+import { Task, TaskState } from '../src/taskManager.model';
+import { Participant } from 'participant-cc';
 import { stringify } from 'querystring';
 import { print } from 'util';
 import { ControllerAdapter } from '@worldsibu/convector-core-adapter';
@@ -24,6 +25,8 @@ export class TaskManagerControllerClient extends ConvectorController {
   /**
    * @param title Shortly describes a specified task
    * @param description Provides more detailed description of a task
+   * @param creatorId Participant.id that will be set as creator
+   * @param prereq Array<string> with ids of all prerequisite tasks
    * @returns id of created task
    */public async create(
     
@@ -31,10 +34,12 @@ export class TaskManagerControllerClient extends ConvectorController {
     
     description: string,
     
+    creatorId: string,
+    
     prereq: string[] = []
   ) {
 
-           return await this.adapter.invoke(this.name, 'create', this.user, title, description, prereq);
+           return await this.adapter.invoke(this.name, 'create', this.user, title, description, creatorId, prereq);
          
    }
 

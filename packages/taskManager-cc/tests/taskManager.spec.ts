@@ -6,9 +6,13 @@ import * as uuid from 'uuid/v4';
 import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
 import 'mocha';
 import * as chaiAsPromised from 'chai-as-promised';
-import { Task, TaskState, User } from '../src/taskManager.model';
-import { TaskManagerControllerClient } from '../client';
+import { Task } from '../src/taskManager.model';
+import { ClientFactory } from '@worldsibu/convector-core';
 import { print } from 'util';
+import { ParticipantController } from '../../participant-cc/src';
+import { TaskManagerController } from '../src';
+import { Participant } from '../../participant-cc/src';
+import { TaskManagerControllerClient } from '../client';
 
 describe('TaskManager', () => {
   chai.use(chaiAsPromised);
@@ -16,29 +20,36 @@ describe('TaskManager', () => {
   let idCreatedTask2 = null;
   let adapter: MockControllerAdapter;
   let taskManagerCtrl: TaskManagerControllerClient;
-  const mockIdentity = 'B6:0B:37:7C:DF:D2:7A:08:0B:98:BF:52:A4:2C:DC:4E:CC:70:91:E1';
+  let participantCtrl: ParticipantController;
 
   before(async () => {
     adapter = new MockControllerAdapter();
     taskManagerCtrl = new TaskManagerControllerClient(adapter);
-
     await adapter.init([
       {
         version: '*',
         controller: 'TaskManagerController',
         name: join(__dirname, '..')
+      },
+      {
+        version: '*',
+        controller: 'ParticipantController',
+        name: join(__dirname, '../../participant-cc')
       }
     ]);
-
+    //taskManagerCtrl = ClientFactory(TaskManagerController, adapter);
+    participantCtrl = ClientFactory(ParticipantController, adapter);
+    await participantCtrl.register('Participant1');
+    let p1 = await adapter.getById<Participant>('Participant1');
   });
 
   it('should create a task', async () => {
-    idCreatedTask = await taskManagerCtrl.create('Test title   ', 'Test description   ');
+    idCreatedTask = await taskManagerCtrl.create('Test title   ', 'Test description   ', 'Participant1');
     const retrivedTask = await adapter.getById<Task>(idCreatedTask);
     expect(retrivedTask.id).to.exist;
     expect(retrivedTask.title).to.equal("Test title");
     expect(retrivedTask.description).to.equal("Test description");
-    expect(retrivedTask.prerequisties).to.be.empty;
+    expect(retrivedTask.prerequisites).to.be.empty;
   });
 
   it('should modify a task with trimmed title and description', async () => {
@@ -46,14 +57,14 @@ describe('TaskManager', () => {
     const retrivedTask = await adapter.getById<Task>(idCreatedTask);
     expect(retrivedTask.title).to.equal("Foo title");
     expect(retrivedTask.description).to.equal("Foo description");
-    expect(retrivedTask.prerequisties).to.be.empty
+    expect(retrivedTask.prerequisites).to.be.empty
   });
 
   it('should create a task with prerequisite', async () => {
-    idCreatedTask2 = await taskManagerCtrl.create('Test title 2', 'Test description 2', [idCreatedTask]);
+    idCreatedTask2 = await taskManagerCtrl.create('Test title 2', 'Test description 2', 'Participant1', [idCreatedTask]);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask2);
     expect(retrivedTask.id).to.exist;
-    expect(retrivedTask.prerequisties).to.contain(idCreatedTask);
+    expect(retrivedTask.prerequisites).to.contain(idCreatedTask);
   });
 
   it('should modify a task with prerequisite', async () => {
@@ -61,7 +72,7 @@ describe('TaskManager', () => {
     const retrivedTask = await adapter.getById<Task>(idCreatedTask);
     expect(retrivedTask.title).to.equal("Foo title");
     expect(retrivedTask.description).to.equal("Foo description");
-    expect(retrivedTask.prerequisties).to.contain(idCreatedTask2);
+    expect(retrivedTask.prerequisites).to.contain(idCreatedTask2);
   });
 
   it('should throw an error when assigning itself as prerequisite', async () => {
@@ -86,7 +97,7 @@ describe('TaskManager', () => {
       'CCqGSM49BAMCA0gAMEUCIQCNsmDjOXF/NvciSZebfk2hfSr/v5CqRD7pIHCq3lIR' +
       'lwIgPC/qGM1yeVinfN0z7M68l8rWn4M4CVR2DtKMpk3G9k9=' +
       '-----END CERTIFICATE-----';
-    await chai.expect(taskManagerCtrl.modify(idCreatedTask, "Test", "", [idCreatedTask]))
+    await chai.expect(taskManagerCtrl.modify(idCreatedTask, "Test", "", []))
       .to.eventually.be.rejectedWith('Only creator of the task is able to make modifications.');
   });
 });

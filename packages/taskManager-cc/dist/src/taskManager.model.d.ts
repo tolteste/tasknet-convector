@@ -13,10 +13,5 @@ export declare class Task extends ConvectorModel<Task> {
     state: TaskState;
     created: number;
     creator: string;
-    prerequisties: string[];
-}
-export declare class User extends ConvectorModel<User> {
-    readonly type: string;
-    name: string;
-    surname: string;
+    prerequisites: string[];
 }

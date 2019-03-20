@@ -8,7 +8,8 @@ import {
   Param
 } from '@worldsibu/convector-core-controller';
 
-import { Task, User, TaskState } from './taskManager.model';
+import { Task, TaskState } from './taskManager.model';
+import { Participant } from 'participant-cc';
 import { stringify } from 'querystring';
 import { print } from 'util';
 
@@ -17,6 +18,8 @@ export class TaskManagerController extends ConvectorController {
   /**
    * @param title Shortly describes a specified task
    * @param description Provides more detailed description of a task
+   * @param creatorId Participant.id that will be set as creator
+   * @param prereq Array<string> with ids of all prerequisite tasks
    * @returns id of created task
    */
   @Invokable()
@@ -25,9 +28,15 @@ export class TaskManagerController extends ConvectorController {
     title: string,
     @Param(yup.string().required().trim())
     description: string,
+    @Param(yup.string())
+    creatorId: string,
     @Param(yup.array().of(yup.string()))
     prereq: string[] = []
   ) {
+    if (await !this.participantIsCaller(creatorId)) {
+      throw new Error(`Participant with creatorId: ${creatorId} does not have identity of a current caller.`)
+    }
+
     var id = uuid();
     // Checking for colisions
     var exists = await Task.getOne(id)
@@ -39,16 +48,15 @@ export class TaskManagerController extends ConvectorController {
     let task = new Task(id);
     // Task initialization
     task.title = title;
+    if (await this.arePrerequisitesValid(prereq)) {
+      task.prerequisites = prereq;
+    } else {
+      return;
+    }
     task.description = description;
     task.state = TaskState.MODIFIABLE;
     task.created = Date.now();
-    if (this.arePrerequisitesValid(prereq)) {
-      task.prerequisties = prereq;
-    } else {
-      return
-    }
-    // Creator is set to a certificate fingerprint of a sender
-    task.creator = this.sender;
+    task.creator = creatorId;
     await task.save();
     return id;
   }
@@ -61,14 +69,16 @@ export class TaskManagerController extends ConvectorController {
     title: string,
     @Param(yup.string())
     description: string,
-    @Param(yup.array().of(yup.string()))
+    @Param(yup.array())
     prereq: string[] = []
   ) {
     const task = await Task.getOne(id);
-    if (task.creator !== this.sender) {
+    if (!task || !task.id ) {
+      throw new Error(`Task with id: "${id}" doesn't exist.`);
+    }
+    if (await this.participantIsCaller(task.creator) === false) {
       throw new Error('Only creator of the task is able to make modifications.');
     }
-
     if (title.length > 0) {
       task.title = title.trim();
     }
@@ -80,17 +90,28 @@ export class TaskManagerController extends ConvectorController {
       throw new Error('Task can\'t have itself as prerequisite');
     }
     if (await this.arePrerequisitesValid(prereq)) {
-      task.prerequisties = prereq;
+      task.prerequisites = prereq;
     }
     await task.save();
     return task
+  }
+
+  private async participantIsCaller(participantId: string) {
+    const participant = await Participant.getOne(participantId);
+    if (!participant || !participant.id || !participant.identities) {
+      throw new Error(`Participant with id: "${participantId}" doesn't exist.`);
+    }
+    const activeIdentity = participant.identities.filter(identity => identity.status === true)[0];
+    if (activeIdentity.fingerprint === this.sender) {
+      return true;
+    }
+    return false;
   }
 
   private async arePrerequisitesValid(prerequisties: string[]): Promise<boolean> {
     if (prerequisties.length === 0) {
       return true;
     }
-
     const tasks = await Task.getAll();
     prerequisties.forEach(function (id) {
       let task = tasks.find(function (task) {
