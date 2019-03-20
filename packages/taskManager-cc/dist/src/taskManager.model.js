@@ -45,6 +45,10 @@ var Task = (function (_super) {
         convector_core_model_1.Validate(yup.string())
     ], Task.prototype, "creator", void 0);
     tslib_1.__decorate([
+        convector_core_model_1.ReadOnly(),
+        convector_core_model_1.Validate(yup.string())
+    ], Task.prototype, "asignee", void 0);
+    tslib_1.__decorate([
         convector_core_model_1.Validate(yup.array().of(yup.string()))
     ], Task.prototype, "prerequisites", void 0);
     return Task;

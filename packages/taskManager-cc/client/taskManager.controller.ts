@@ -58,4 +58,16 @@ export class TaskManagerControllerClient extends ConvectorController {
           return await this.adapter.invoke(this.name, 'modify', this.user, id, title, description, prereq);
         
   }
+
+  
+  public async assign(
+    
+    taskId: string,
+    
+    assigneeId: string
+  ) {
+
+          return await this.adapter.invoke(this.name, 'assign', this.user, taskId, assigneeId);
+        
+  }
 }

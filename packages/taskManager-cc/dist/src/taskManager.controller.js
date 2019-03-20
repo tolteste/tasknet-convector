@@ -57,15 +57,12 @@ var TaskManagerController = (function (_super) {
             var task;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, taskManager_model_1.Task.getOne(id)];
+                    case 0: return [4, this.getTask(id)];
                     case 1:
                         task = _a.sent();
-                        if (!task || !task.id) {
-                            throw new Error("Task with id: \"" + id + "\" doesn't exist.");
-                        }
                         return [4, this.participantIsCaller(task.creator)];
                     case 2:
-                        if ((_a.sent()) === false) {
+                        if ((_a.sent()) !== true) {
                             throw new Error('Only creator of the task is able to make modifications.');
                         }
                         if (title.length > 0) {
@@ -85,6 +82,35 @@ var TaskManagerController = (function (_super) {
                         return [4, task.save()];
                     case 4:
                         _a.sent();
+                        return [2, task];
+                }
+            });
+        });
+    };
+    TaskManagerController.prototype.assign = function (taskId, assigneeId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var task;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.getTask(taskId)];
+                    case 1:
+                        task = _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    TaskManagerController.prototype.getTask = function (id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var task;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, taskManager_model_1.Task.getOne(id)];
+                    case 1:
+                        task = _a.sent();
+                        if (!task || !task.id) {
+                            throw new Error("Task with id: \"" + id + "\" doesn't exist.");
+                        }
                         return [2, task];
                 }
             });
@@ -149,6 +175,11 @@ var TaskManagerController = (function (_super) {
         tslib_1.__param(2, convector_core_controller_1.Param(yup.string())),
         tslib_1.__param(3, convector_core_controller_1.Param(yup.array()))
     ], TaskManagerController.prototype, "modify", null);
+    tslib_1.__decorate([
+        convector_core_controller_1.Invokable(),
+        tslib_1.__param(0, convector_core_controller_1.Param(yup.string())),
+        tslib_1.__param(1, convector_core_controller_1.Param(yup.string()))
+    ], TaskManagerController.prototype, "assign", null);
     TaskManagerController = tslib_1.__decorate([
         convector_core_controller_1.Controller('taskManager')
     ], TaskManagerController);

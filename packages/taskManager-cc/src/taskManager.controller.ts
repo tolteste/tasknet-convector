@@ -72,11 +72,9 @@ export class TaskManagerController extends ConvectorController {
     @Param(yup.array())
     prereq: string[] = []
   ) {
-    const task = await Task.getOne(id);
-    if (!task || !task.id ) {
-      throw new Error(`Task with id: "${id}" doesn't exist.`);
-    }
-    if (await this.participantIsCaller(task.creator) === false) {
+    const task = await this.getTask(id);
+
+    if (await this.participantIsCaller(task.creator) !== true) {
       throw new Error('Only creator of the task is able to make modifications.');
     }
     if (title.length > 0) {
@@ -94,6 +92,25 @@ export class TaskManagerController extends ConvectorController {
     }
     await task.save();
     return task
+  }
+
+  @Invokable()
+  public async assign(
+    @Param(yup.string())
+    taskId: string,
+    @Param(yup.string())
+    assigneeId: string
+  ) {
+    const task = await this.getTask(taskId);
+
+  }
+
+  private async getTask(id: string) {
+    const task = await Task.getOne(id);
+    if (!task || !task.id) {
+      throw new Error(`Task with id: "${id}" doesn't exist.`);
+    }
+    return task;
   }
 
   private async participantIsCaller(participantId: string) {
