@@ -115,7 +115,7 @@ describe('TaskManager', () => {
     await chai.expect(taskManagerCtrl.assign(idCreatedTask2,'Participant1')).to.eventually.be.rejectedWith('Task can\'t be assigned to this participant.');
   });
 
-  it('should assign a participant as an assignee to a task created by Participant1', async() => {
+  it('should assign a participant to a task created by Participant1', async() => {
     await taskManagerCtrl.assign(idCreatedTask,'Participant2');
     let retrivedTask = await adapter.getById<Task>(idCreatedTask);
     chai.expect(retrivedTask.assignee).to.equal('Participant2');

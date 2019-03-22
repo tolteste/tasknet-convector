@@ -104,15 +104,31 @@ export class TaskManagerController extends ConvectorController {
     const task = await this.getTask(taskId);
 
     /* Task is assigned when caller of a function is an assignee
-    * or task creator calls function and assigns a specific participant
-    */
+    * or task creator calls function and assigns a specific participant */
     if (await this.participantIsCaller(assigneeId) !== true &&
       await this.participantIsCaller(task.creator) !== true) {
-        throw new Error(`Task can't be assigned to this participant.`)
+      throw new Error(`Task can't be assigned to this participant.`)
+    }
+
+    if (task.state !== TaskState.MODIFIABLE) {
+      throw new Error(`Can't assign task that is not in MODIFIABLE state.`)
     }
 
     task.assignee = assigneeId;
     task.state = TaskState.IN_PROGRESS
+    await task.save();
+  }
+
+  @Invokable()
+  public async passToReview(
+    @Param(yup.string)
+    taskId: string
+  ) {
+    const task = await this.getTask(taskId);
+    if(await this.participantIsCaller(task.assignee) !== true){
+      throw new Error(`Only assignee can pass a task to a review.`);
+    }
+    task.state = TaskState.IN_REVISION;
     await task.save();
   }
 

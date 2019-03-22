@@ -107,6 +107,9 @@ var TaskManagerController = (function (_super) {
                         if (_a) {
                             throw new Error("Task can't be assigned to this participant.");
                         }
+                        if (task.state !== taskManager_model_1.TaskState.MODIFIABLE) {
+                            throw new Error("Can't assign task that is not in MODIFIABLE state.");
+                        }
                         task.assignee = assigneeId;
                         task.state = taskManager_model_1.TaskState.IN_PROGRESS;
                         return [4, task.save()];
