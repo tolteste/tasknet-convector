@@ -120,6 +120,31 @@ var TaskManagerController = (function (_super) {
             });
         });
     };
+    TaskManagerController.prototype.passToReview = function (taskId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var task;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.getTask(taskId)];
+                    case 1:
+                        task = _a.sent();
+                        return [4, this.participantIsCaller(task.assignee)];
+                    case 2:
+                        if ((_a.sent()) !== true) {
+                            throw new Error("Only assignee can pass a task to a review.");
+                        }
+                        if (task.state !== taskManager_model_1.TaskState.IN_PROGRESS) {
+                            throw new Error("Can't pass a task to review. Task is not IN_PROGRESS.");
+                        }
+                        task.state = taskManager_model_1.TaskState.IN_REVISION;
+                        return [4, task.save()];
+                    case 3:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
     TaskManagerController.prototype.getTask = function (id) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
@@ -200,6 +225,10 @@ var TaskManagerController = (function (_super) {
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string())),
         tslib_1.__param(1, convector_core_controller_1.Param(yup.string()))
     ], TaskManagerController.prototype, "assign", null);
+    tslib_1.__decorate([
+        convector_core_controller_1.Invokable(),
+        tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
+    ], TaskManagerController.prototype, "passToReview", null);
     TaskManagerController = tslib_1.__decorate([
         convector_core_controller_1.Controller('taskManager')
     ], TaskManagerController);

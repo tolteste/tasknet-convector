@@ -8,7 +8,6 @@ import 'mocha';
 import * as chaiAsPromised from 'chai-as-promised';
 import { Task, TaskState } from '../src/taskManager.model';
 import { ClientFactory } from '@worldsibu/convector-core';
-import { print } from 'util';
 import { ParticipantController } from '../../participant-cc/src';
 import { TaskManagerController } from '../src';
 import { Participant } from '../../participant-cc/src';
@@ -18,6 +17,7 @@ describe('TaskManager', () => {
   chai.use(chaiAsPromised);
   let idCreatedTask = null;
   let idCreatedTask2 = null;
+  let idCreatedTask3 = null;
   let adapter: MockControllerAdapter;
   let taskManagerCtrl: TaskManagerControllerClient;
   let participantCtrl: ParticipantController;
@@ -103,9 +103,9 @@ describe('TaskManager', () => {
   });
 
   it('should assign a participant as an assignee to a task', async () => {
-    let idTask = await taskManagerCtrl.create("Test","Description","Participant2");
-    await taskManagerCtrl.assign(idTask,'Participant1');
-    let retrivedTask = await adapter.getById<Task>(idTask);
+    idCreatedTask3 = await taskManagerCtrl.create("Test","Description","Participant2");
+    await taskManagerCtrl.assign(idCreatedTask3,'Participant1');
+    let retrivedTask = await adapter.getById<Task>(idCreatedTask3);
     chai.expect(retrivedTask.assignee).to.equal('Participant1');
     chai.expect(retrivedTask.creator).to.equal('Participant2');
     chai.expect(retrivedTask.state).to.equal(TaskState.IN_PROGRESS);
@@ -121,5 +121,15 @@ describe('TaskManager', () => {
     chai.expect(retrivedTask.assignee).to.equal('Participant2');
     chai.expect(retrivedTask.creator).to.equal('Participant1');
     chai.expect(retrivedTask.state).to.equal(TaskState.IN_PROGRESS);
+  });
+
+  it('should pass a task to a review', async() => {
+    await taskManagerCtrl.passToReview(idCreatedTask);
+    let retrivedTask = await adapter.getById<Task>(idCreatedTask);
+    chai.expect(retrivedTask.state).to.equal(TaskState.IN_REVISION);
+  });
+
+  it('should throw an error when caller is not assignee of a task that is being passed to a revision', async () => {
+    await chai.expect(taskManagerCtrl.passToReview(idCreatedTask3)).to.eventually.be.rejectedWith(`Only assignee can pass a task to a review.`);
   });
 });

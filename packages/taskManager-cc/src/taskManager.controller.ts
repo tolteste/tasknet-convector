@@ -121,12 +121,15 @@ export class TaskManagerController extends ConvectorController {
 
   @Invokable()
   public async passToReview(
-    @Param(yup.string)
+    @Param(yup.string())
     taskId: string
   ) {
     const task = await this.getTask(taskId);
     if(await this.participantIsCaller(task.assignee) !== true){
       throw new Error(`Only assignee can pass a task to a review.`);
+    }
+    if(task.state !== TaskState.IN_PROGRESS){
+      throw new Error(`Can't pass a task to review. Task is not IN_PROGRESS.`);
     }
     task.state = TaskState.IN_REVISION;
     await task.save();
@@ -152,7 +155,7 @@ export class TaskManagerController extends ConvectorController {
     return false;
   }
 
-  private async arePrerequisitesValid(prerequisties: string[]): Promise<boolean> {
+  private async arePrerequisitesValid(prerequisties: string[]) {
     if (prerequisties.length === 0) {
       return true;
     }
