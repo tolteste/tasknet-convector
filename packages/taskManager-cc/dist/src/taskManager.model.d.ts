@@ -13,6 +13,6 @@ export declare class Task extends ConvectorModel<Task> {
     state: TaskState;
     created: number;
     creator: string;
-    asignee: string;
+    assignee: string;
     prerequisites: string[];
 }

@@ -6,7 +6,7 @@ import * as uuid from 'uuid/v4';
 import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
 import 'mocha';
 import * as chaiAsPromised from 'chai-as-promised';
-import { Task } from '../src/taskManager.model';
+import { Task, TaskState } from '../src/taskManager.model';
 import { ClientFactory } from '@worldsibu/convector-core';
 import { print } from 'util';
 import { ParticipantController } from '../../participant-cc/src';
@@ -97,7 +97,29 @@ describe('TaskManager', () => {
       'CCqGSM49BAMCA0gAMEUCIQCNsmDjOXF/NvciSZebfk2hfSr/v5CqRD7pIHCq3lIR' +
       'lwIgPC/qGM1yeVinfN0z7M68l8rWn4M4CVR2DtKMpk3G9k9=' +
       '-----END CERTIFICATE-----';
+    await participantCtrl.register('Participant2');
     await chai.expect(taskManagerCtrl.modify(idCreatedTask, "Test", "", []))
       .to.eventually.be.rejectedWith('Only creator of the task is able to make modifications.');
+  });
+
+  it('should assign a participant as an assignee to a task', async () => {
+    let idTask = await taskManagerCtrl.create("Test","Description","Participant2");
+    await taskManagerCtrl.assign(idTask,'Participant1');
+    let retrivedTask = await adapter.getById<Task>(idTask);
+    chai.expect(retrivedTask.assignee).to.equal('Participant1');
+    chai.expect(retrivedTask.creator).to.equal('Participant2');
+    chai.expect(retrivedTask.state).to.equal(TaskState.IN_PROGRESS);
+  });
+
+  it('should throw an error when caller is not creator and trying to assign different participant', async () => {
+    await chai.expect(taskManagerCtrl.assign(idCreatedTask2,'Participant1')).to.eventually.be.rejectedWith('Task can\'t be assigned to this participant.');
+  });
+
+  it('should assign a participant as an assignee to a task created by Participant1', async() => {
+    await taskManagerCtrl.assign(idCreatedTask,'Participant2');
+    let retrivedTask = await adapter.getById<Task>(idCreatedTask);
+    chai.expect(retrivedTask.assignee).to.equal('Participant2');
+    chai.expect(retrivedTask.creator).to.equal('Participant1');
+    chai.expect(retrivedTask.state).to.equal(TaskState.IN_PROGRESS);
   });
 });

@@ -44,7 +44,7 @@ export class Task extends ConvectorModel<Task> {
 
   @ReadOnly()
   @Validate(yup.string())
-  public asignee: string;
+  public assignee: string;
 
   @Validate(yup.array().of(yup.string()))
   public prerequisites: string[];

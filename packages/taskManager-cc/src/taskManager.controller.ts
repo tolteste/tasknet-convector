@@ -65,9 +65,9 @@ export class TaskManagerController extends ConvectorController {
   public async modify(
     @Param(yup.string())
     id: string,
-    @Param(yup.string())
+    @Param(yup.string().trim())
     title: string,
-    @Param(yup.string())
+    @Param(yup.string().trim())
     description: string,
     @Param(yup.array())
     prereq: string[] = []
@@ -78,10 +78,10 @@ export class TaskManagerController extends ConvectorController {
       throw new Error('Only creator of the task is able to make modifications.');
     }
     if (title.length > 0) {
-      task.title = title.trim();
+      task.title = title;
     }
     if (description.length > 0) {
-      task.description = description.trim();
+      task.description = description;
     }
 
     if (prereq.indexOf(id) !== -1) {
@@ -103,6 +103,17 @@ export class TaskManagerController extends ConvectorController {
   ) {
     const task = await this.getTask(taskId);
 
+    /* Task is assigned when caller of a function is an assignee
+    * or task creator calls function and assigns a specific participant
+    */
+    if (await this.participantIsCaller(assigneeId) !== true &&
+      await this.participantIsCaller(task.creator) !== true) {
+        throw new Error(`Task can't be assigned to this participant.`)
+    }
+
+    task.assignee = assigneeId;
+    task.state = TaskState.IN_PROGRESS
+    await task.save();
   }
 
   private async getTask(id: string) {

@@ -66,10 +66,10 @@ var TaskManagerController = (function (_super) {
                             throw new Error('Only creator of the task is able to make modifications.');
                         }
                         if (title.length > 0) {
-                            task.title = title.trim();
+                            task.title = title;
                         }
                         if (description.length > 0) {
-                            task.description = description.trim();
+                            task.description = description;
                         }
                         if (prereq.indexOf(id) !== -1) {
                             throw new Error('Task can\'t have itself as prerequisite');
@@ -89,12 +89,29 @@ var TaskManagerController = (function (_super) {
     };
     TaskManagerController.prototype.assign = function (taskId, assigneeId) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var task;
-            return tslib_1.__generator(this, function (_a) {
-                switch (_a.label) {
+            var task, _a;
+            return tslib_1.__generator(this, function (_b) {
+                switch (_b.label) {
                     case 0: return [4, this.getTask(taskId)];
                     case 1:
-                        task = _a.sent();
+                        task = _b.sent();
+                        return [4, this.participantIsCaller(assigneeId)];
+                    case 2:
+                        _a = (_b.sent()) !== true;
+                        if (!_a) return [3, 4];
+                        return [4, this.participantIsCaller(task.creator)];
+                    case 3:
+                        _a = (_b.sent()) !== true;
+                        _b.label = 4;
+                    case 4:
+                        if (_a) {
+                            throw new Error("Task can't be assigned to this participant.");
+                        }
+                        task.assignee = assigneeId;
+                        task.state = taskManager_model_1.TaskState.IN_PROGRESS;
+                        return [4, task.save()];
+                    case 5:
+                        _b.sent();
                         return [2];
                 }
             });
@@ -171,8 +188,8 @@ var TaskManagerController = (function (_super) {
     tslib_1.__decorate([
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string())),
-        tslib_1.__param(1, convector_core_controller_1.Param(yup.string())),
-        tslib_1.__param(2, convector_core_controller_1.Param(yup.string())),
+        tslib_1.__param(1, convector_core_controller_1.Param(yup.string().trim())),
+        tslib_1.__param(2, convector_core_controller_1.Param(yup.string().trim())),
         tslib_1.__param(3, convector_core_controller_1.Param(yup.array()))
     ], TaskManagerController.prototype, "modify", null);
     tslib_1.__decorate([
