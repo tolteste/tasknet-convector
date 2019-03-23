@@ -155,6 +155,57 @@ export class TaskManagerController extends ConvectorController {
     await task.save();
   }
 
+  @Invokable()
+  public async revoke(
+    @Param(yup.string())
+    taskId: string
+  ) {
+    const task = await this.getTask(taskId);
+    if (await this.participantIsCaller(task.assignee) !== true ||
+      await this.participantIsCaller(task.creator) !== true) {
+      throw new Error(`Only assignee or creator can revoke a task.`);
+    }
+    if (task.state !== TaskState.IN_PROGRESS) {
+      throw new Error(`Can't revoke a task. Task is not IN_PROGRESS state.`);
+    }
+    task.state = TaskState.MODIFIABLE;
+    await task.save();
+  }
+
+  @Invokable()
+  public async rework(
+    @Param(yup.string())
+    taskId: string
+  ) {
+    const task = await this.getTask(taskId);
+    if (await this.participantIsCaller(task.assignee) !== true) {
+      throw new Error(`Only creator can demand a rework of a task.`);
+    }
+    if (task.state !== TaskState.IN_REVISION) {
+      throw new Error(`Can't demand rework of a task. Task is not IN_REVISION state.`);
+    }
+    task.state = TaskState.IN_PROGRESS;
+    await task.save();
+  }
+
+  public async delete(
+    @Param(yup.string())
+    taskId: string
+  ) {
+    const task = await this.getTask(taskId);
+    if (await this.participantIsCaller(task.creator) !== true) {
+      throw new Error(`Only creator can delete a task.`);
+    }
+    if (task.state !== TaskState.MODIFIABLE) {
+    throw new Error(`Can't delete a task that is not MODIFIABLE.`)
+    }
+    await task.delete()
+  }
+
+  //========================================================================
+  //=======================SUPPORT FUNCTIONS================================
+  //========================================================================
+
   private async getTask(id: string) {
     const task = await Task.getOne(id);
     if (!task || !task.id) {
@@ -162,8 +213,6 @@ export class TaskManagerController extends ConvectorController {
     }
     return task;
   }
-
-  
 
   private async participantIsCaller(participantId: string) {
     const participant = await Participant.getOne(participantId);
