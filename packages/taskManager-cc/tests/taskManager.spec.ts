@@ -18,6 +18,7 @@ describe('TaskManager', () => {
   let idCreatedTask = null;
   let idCreatedTask2 = null;
   let idCreatedTask3 = null;
+  let p1Identity = null;
   let adapter: MockControllerAdapter;
   let taskManagerCtrl: TaskManagerControllerClient;
   let participantCtrl: ParticipantController;
@@ -41,6 +42,7 @@ describe('TaskManager', () => {
     participantCtrl = ClientFactory(ParticipantController, adapter);
     await participantCtrl.register('Participant1');
     let p1 = await adapter.getById<Participant>('Participant1');
+    p1Identity = (adapter.stub as any).usercert
   });
 
   it('should create a task', async () => {
@@ -131,5 +133,16 @@ describe('TaskManager', () => {
 
   it('should throw an error when caller is not assignee of a task that is being passed to a revision', async () => {
     await chai.expect(taskManagerCtrl.passToReview(idCreatedTask3)).to.eventually.be.rejectedWith(`Only assignee can pass a task to a review.`);
+  });
+
+  it('should mark task as completed', async() => {
+    (adapter.stub as any).usercert = p1Identity;
+    await taskManagerCtrl.approve(idCreatedTask);
+    let retrivedTask = await adapter.getById<Task>(idCreatedTask);
+    chai.expect(retrivedTask.state).to.equal(TaskState.COMPLETED);
+  });
+
+  it('should throw an error when caller is not assignee of a task that is being passed to a revision', async () => {
+    await chai.expect(taskManagerCtrl.approve(idCreatedTask3)).to.eventually.be.rejectedWith(`Only creator can review a task.`);
   });
 });

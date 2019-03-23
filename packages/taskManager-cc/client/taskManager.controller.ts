@@ -80,4 +80,14 @@ export class TaskManagerControllerClient extends ConvectorController {
           return await this.adapter.invoke(this.name, 'passToReview', this.user, taskId);
         
   }
+
+  
+  public async approve(
+    
+    taskId: string
+  ) {
+
+          return await this.adapter.invoke(this.name, 'approve', this.user, taskId);
+        
+  }
 }

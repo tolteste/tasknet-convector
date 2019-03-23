@@ -65,6 +65,9 @@ var TaskManagerController = (function (_super) {
                         if ((_a.sent()) !== true) {
                             throw new Error('Only creator of the task is able to make modifications.');
                         }
+                        if (task.state !== taskManager_model_1.TaskState.MODIFIABLE) {
+                            throw new Error("Can't modify a task that is not in MODIFIABLE state.");
+                        }
                         if (title.length > 0) {
                             task.title = title;
                         }
@@ -137,6 +140,31 @@ var TaskManagerController = (function (_super) {
                             throw new Error("Can't pass a task to review. Task is not IN_PROGRESS.");
                         }
                         task.state = taskManager_model_1.TaskState.IN_REVISION;
+                        return [4, task.save()];
+                    case 3:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    TaskManagerController.prototype.approve = function (taskId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var task;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.getTask(taskId)];
+                    case 1:
+                        task = _a.sent();
+                        return [4, this.participantIsCaller(task.creator)];
+                    case 2:
+                        if ((_a.sent()) !== true) {
+                            throw new Error("Only creator can review a task.");
+                        }
+                        if (task.state !== taskManager_model_1.TaskState.IN_REVISION) {
+                            throw new Error("Can't end revison of a task. Task is not IN_REVISION state.");
+                        }
+                        task.state = taskManager_model_1.TaskState.COMPLETED;
                         return [4, task.save()];
                     case 3:
                         _a.sent();
@@ -229,6 +257,10 @@ var TaskManagerController = (function (_super) {
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskManagerController.prototype, "passToReview", null);
+    tslib_1.__decorate([
+        convector_core_controller_1.Invokable(),
+        tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
+    ], TaskManagerController.prototype, "approve", null);
     TaskManagerController = tslib_1.__decorate([
         convector_core_controller_1.Controller('taskManager')
     ], TaskManagerController);
