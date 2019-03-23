@@ -90,4 +90,24 @@ export class TaskManagerControllerClient extends ConvectorController {
           return await this.adapter.invoke(this.name, 'approve', this.user, taskId);
         
   }
+
+  
+  public async revoke(
+    
+    taskId: string
+  ) {
+
+          return await this.adapter.invoke(this.name, 'revoke', this.user, taskId);
+        
+  }
+
+  
+  public async rework(
+    
+    taskId: string
+  ) {
+
+          return await this.adapter.invoke(this.name, 'rework', this.user, taskId);
+        
+  }
 }

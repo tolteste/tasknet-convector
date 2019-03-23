@@ -178,7 +178,7 @@ export class TaskManagerController extends ConvectorController {
     taskId: string
   ) {
     const task = await this.getTask(taskId);
-    if (await this.participantIsCaller(task.assignee) !== true) {
+    if (await this.participantIsCaller(task.creator) !== true) {
       throw new Error(`Only creator can demand a rework of a task.`);
     }
     if (task.state !== TaskState.IN_REVISION) {

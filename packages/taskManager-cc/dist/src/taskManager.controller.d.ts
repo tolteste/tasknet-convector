@@ -6,6 +6,9 @@ export declare class TaskManagerController extends ConvectorController {
     assign(taskId: string, assigneeId: string): Promise<void>;
     passToReview(taskId: string): Promise<void>;
     approve(taskId: string): Promise<void>;
+    revoke(taskId: string): Promise<void>;
+    rework(taskId: string): Promise<void>;
+    delete(taskId: string): Promise<void>;
     private getTask(id);
     private participantIsCaller(participantId);
     private arePrerequisitesValid(prerequisties);

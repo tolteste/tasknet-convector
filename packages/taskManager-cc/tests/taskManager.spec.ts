@@ -12,16 +12,34 @@ import { ParticipantController } from '../../participant-cc/src';
 import { TaskManagerController } from '../src';
 import { Participant } from '../../participant-cc/src';
 import { TaskManagerControllerClient } from '../client';
+import { print } from 'util';
+
 
 describe('TaskManager', () => {
   chai.use(chaiAsPromised);
+  let adapter: MockControllerAdapter;
+  let taskManagerCtrl: TaskManagerControllerClient;
+  let participantCtrl: ParticipantController;
   let idCreatedTask = null;
   let idCreatedTask2 = null;
   let idCreatedTask3 = null;
   let p1Identity = null;
-  let adapter: MockControllerAdapter;
-  let taskManagerCtrl: TaskManagerControllerClient;
-  let participantCtrl: ParticipantController;
+  let p2Identity = '-----BEGIN CERTIFICATE-----' +
+  'MIICjzCCAjWgAwIBAgIUITsRsw5SIJ+33SKwM4j1Dl4cDXQwCgYIKoZIzj0EAwIw' +
+  'czELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh' +
+  'biBGcmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMT' +
+  'E2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTgwODEzMDEyOTAwWhcNMTkwODEzMDEz' +
+  'NDAwWjBCMTAwDQYDVQQLEwZjbGllbnQwCwYDVQQLEwRvcmcxMBIGA1UECxMLZGVw' +
+  'YXJ0bWVudDExDjAMBgNVBAMTBXVzZXIzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcD' +
+  'QgAEcrfc0HHq5LG1UbyPSRLNjIQKqYoNY7/zPFC3UTJi3TTaIEqgVL6DF/8JIKuj' +
+  'IT/lwkuemafacXj8pdPw3Zyqs6OB1zCB1DAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0T' +
+  'AQH/BAIwADAdBgNVHQ4EFgQUHFUlW/XJC7VcJe5pLFkz+xlMNpowKwYDVR0jBCQw' +
+  'IoAgQ3hSDt2ktmSXZrQ6AY0EK2UHhXMx8Yq6O7XiA+X6vS4waAYIKgMEBQYHCAEE' +
+  'XHsiYXR0cnMiOnsiaGYuQWZmaWxpYXRpb24iOiJvcmcxLmRlcGFydG1lbnQxIiwi' +
+  'aGYuRW5yb2xsbWVudElEIjoidXNlcjMiLCJoZi5UeXBlIjoiY2xpZW50In19MAoG' +
+  'CCqGSM49BAMCA0gAMEUCIQCNsmDjOXF/NvciSZebfk2hfSr/v5CqRD7pIHCq3lIR' +
+  'lwIgPC/qGM1yeVinfN0z7M68l8rWn4M4CVR2DtKMpk3G9k9=' +
+  '-----END CERTIFICATE-----';
 
   before(async () => {
     adapter = new MockControllerAdapter();
@@ -83,22 +101,7 @@ describe('TaskManager', () => {
   });
 
   it('should throw an error when user that did not created the task wants to make a modification', async () => {
-    (adapter.stub as any).usercert = '-----BEGIN CERTIFICATE-----' +
-      'MIICjzCCAjWgAwIBAgIUITsRsw5SIJ+33SKwM4j1Dl4cDXQwCgYIKoZIzj0EAwIw' +
-      'czELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh' +
-      'biBGcmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMT' +
-      'E2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTgwODEzMDEyOTAwWhcNMTkwODEzMDEz' +
-      'NDAwWjBCMTAwDQYDVQQLEwZjbGllbnQwCwYDVQQLEwRvcmcxMBIGA1UECxMLZGVw' +
-      'YXJ0bWVudDExDjAMBgNVBAMTBXVzZXIzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcD' +
-      'QgAEcrfc0HHq5LG1UbyPSRLNjIQKqYoNY7/zPFC3UTJi3TTaIEqgVL6DF/8JIKuj' +
-      'IT/lwkuemafacXj8pdPw3Zyqs6OB1zCB1DAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0T' +
-      'AQH/BAIwADAdBgNVHQ4EFgQUHFUlW/XJC7VcJe5pLFkz+xlMNpowKwYDVR0jBCQw' +
-      'IoAgQ3hSDt2ktmSXZrQ6AY0EK2UHhXMx8Yq6O7XiA+X6vS4waAYIKgMEBQYHCAEE' +
-      'XHsiYXR0cnMiOnsiaGYuQWZmaWxpYXRpb24iOiJvcmcxLmRlcGFydG1lbnQxIiwi' +
-      'aGYuRW5yb2xsbWVudElEIjoidXNlcjMiLCJoZi5UeXBlIjoiY2xpZW50In19MAoG' +
-      'CCqGSM49BAMCA0gAMEUCIQCNsmDjOXF/NvciSZebfk2hfSr/v5CqRD7pIHCq3lIR' +
-      'lwIgPC/qGM1yeVinfN0z7M68l8rWn4M4CVR2DtKMpk3G9k9=' +
-      '-----END CERTIFICATE-----';
+    (adapter.stub as any).usercert = p2Identity;
     await participantCtrl.register('Participant2');
     await chai.expect(taskManagerCtrl.modify(idCreatedTask, "Test", "", []))
       .to.eventually.be.rejectedWith('Only creator of the task is able to make modifications.');
@@ -144,5 +147,15 @@ describe('TaskManager', () => {
 
   it('should throw an error when caller is not assignee of a task that is being passed to a revision', async () => {
     await chai.expect(taskManagerCtrl.approve(idCreatedTask3)).to.eventually.be.rejectedWith(`Only creator can review a task.`);
+  });
+
+
+
+  it('should send a task for a rework', async() => {
+    await taskManagerCtrl.passToReview(idCreatedTask3);
+    (adapter.stub as any).usercert = p2Identity;
+    await taskManagerCtrl.rework(idCreatedTask3);
+    let retrivedTask = await adapter.getById<Task>(idCreatedTask3);
+    chai.expect(retrivedTask.state).to.equal(TaskState.IN_PROGRESS);
   });
 });
