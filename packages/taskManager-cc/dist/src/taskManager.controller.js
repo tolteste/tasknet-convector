@@ -184,7 +184,7 @@ var TaskManagerController = (function (_super) {
                         return [4, this.participantIsCaller(task.assignee)];
                     case 2:
                         _a = (_b.sent()) !== true;
-                        if (_a) return [3, 4];
+                        if (!_a) return [3, 4];
                         return [4, this.participantIsCaller(task.creator)];
                     case 3:
                         _a = (_b.sent()) !== true;
@@ -197,6 +197,7 @@ var TaskManagerController = (function (_super) {
                             throw new Error("Can't revoke a task. Task is not IN_PROGRESS state.");
                         }
                         task.state = taskManager_model_1.TaskState.MODIFIABLE;
+                        task.assignee = undefined;
                         return [4, task.save()];
                     case 5:
                         _b.sent();
@@ -351,6 +352,7 @@ var TaskManagerController = (function (_super) {
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskManagerController.prototype, "rework", null);
     tslib_1.__decorate([
+        convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskManagerController.prototype, "delete", null);
     TaskManagerController = tslib_1.__decorate([

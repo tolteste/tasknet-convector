@@ -161,7 +161,7 @@ export class TaskManagerController extends ConvectorController {
     taskId: string
   ) {
     const task = await this.getTask(taskId);
-    if (await this.participantIsCaller(task.assignee) !== true ||
+    if (await this.participantIsCaller(task.assignee) !== true &&
       await this.participantIsCaller(task.creator) !== true) {
       throw new Error(`Only assignee or creator can revoke a task.`);
     }
@@ -169,6 +169,7 @@ export class TaskManagerController extends ConvectorController {
       throw new Error(`Can't revoke a task. Task is not IN_PROGRESS state.`);
     }
     task.state = TaskState.MODIFIABLE;
+    task.assignee = undefined;
     await task.save();
   }
 
@@ -188,6 +189,7 @@ export class TaskManagerController extends ConvectorController {
     await task.save();
   }
 
+  @Invokable()
   public async delete(
     @Param(yup.string())
     taskId: string

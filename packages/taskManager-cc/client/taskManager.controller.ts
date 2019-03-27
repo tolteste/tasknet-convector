@@ -110,4 +110,14 @@ export class TaskManagerControllerClient extends ConvectorController {
           return await this.adapter.invoke(this.name, 'rework', this.user, taskId);
         
   }
+
+  
+  public async delete(
+    
+    taskId: string
+  ) {
+
+          return await this.adapter.invoke(this.name, 'delete', this.user, taskId);
+        
+  }
 }
