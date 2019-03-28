@@ -12,7 +12,6 @@ var TaskManagerController = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     TaskManagerController.prototype.create = function (title, description, creatorId, prereq) {
-        if (prereq === void 0) { prereq = []; }
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var id, exists, task;
             return tslib_1.__generator(this, function (_a) {
@@ -52,7 +51,6 @@ var TaskManagerController = (function (_super) {
         });
     };
     TaskManagerController.prototype.modify = function (id, title, description, prereq) {
-        if (prereq === void 0) { prereq = []; }
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
             return tslib_1.__generator(this, function (_a) {

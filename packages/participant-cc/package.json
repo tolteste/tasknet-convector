@@ -9,7 +9,7 @@
   ],
   "scripts": { 
     "clean": "rimraf dist client", 
-    "build": "npm run clean && npm run client:generate && tsc", 
+    "build": "npm run clean && tsc", 
     "prepare": "npm run build", 
     "test": "echo 'No tests specified'", 
     "client:generate": "generate-controller-interface -c ParticipantController"

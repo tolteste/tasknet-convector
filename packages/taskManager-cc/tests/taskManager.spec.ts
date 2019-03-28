@@ -2,7 +2,6 @@
 import { join } from 'path';
 import * as chai from 'chai'
 import { expect } from 'chai';
-import * as uuid from 'uuid/v4';
 import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
 import 'mocha';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -11,14 +10,13 @@ import { ClientFactory } from '@worldsibu/convector-core';
 import { ParticipantController } from '../../participant-cc/src';
 import { TaskManagerController } from '../src';
 import { Participant } from '../../participant-cc/src';
-import { TaskManagerControllerClient } from '../client';
 import { print, isNull } from 'util';
 
 
 describe('TaskManager', () => {
   chai.use(chaiAsPromised);
   let adapter: MockControllerAdapter;
-  let taskManagerCtrl: TaskManagerControllerClient;
+  let taskManagerCtrl: TaskManagerController;
   let participantCtrl: ParticipantController;
   let idCreatedTask;
   let idCreatedTask2;
@@ -43,7 +41,6 @@ describe('TaskManager', () => {
 
   before(async () => {
     adapter = new MockControllerAdapter();
-    taskManagerCtrl = new TaskManagerControllerClient(adapter);
     await adapter.init([
       {
         version: '*',
@@ -56,8 +53,7 @@ describe('TaskManager', () => {
         name: join(__dirname, '../../participant-cc')
       }
     ]);
-    // Can't use following factory because it messes with optional parameters for functions
-    //taskManagerCtrl = ClientFactory(TaskManagerController, adapter);
+    taskManagerCtrl = ClientFactory(TaskManagerController, adapter);
     participantCtrl = ClientFactory(ParticipantController, adapter);
     await participantCtrl.register('Participant1');
     let p1 = await adapter.getById<Participant>('Participant1');
@@ -65,7 +61,7 @@ describe('TaskManager', () => {
   });
 
   it('should create a task', async () => {
-    idCreatedTask = await taskManagerCtrl.create('Test title   ', 'Test description   ', 'Participant1');
+    idCreatedTask = await taskManagerCtrl.create('Test title   ', 'Test description   ', 'Participant1',[]);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask);
     expect(retrivedTask.id).to.exist;
     expect(retrivedTask.title).to.equal("Test title");
@@ -74,7 +70,7 @@ describe('TaskManager', () => {
   });
 
   it('should modify a task with trimmed title and description', async () => {
-    await taskManagerCtrl.modify(idCreatedTask, "Foo title   ", "  Foo description");
+    await taskManagerCtrl.modify(idCreatedTask, "Foo title   ", "  Foo description",[]);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask);
     expect(retrivedTask.title).to.equal("Foo title");
     expect(retrivedTask.description).to.equal("Foo description");
@@ -109,7 +105,7 @@ describe('TaskManager', () => {
   });
 
   it('should assign a participant as an assignee to a task', async () => {
-    idCreatedTask3 = await taskManagerCtrl.create("Test", "Description", "Participant2");
+    idCreatedTask3 = await taskManagerCtrl.create("Test", "Description", "Participant2",[]);
     await taskManagerCtrl.assign(idCreatedTask3, 'Participant1');
     let retrivedTask = await adapter.getById<Task>(idCreatedTask3);
     chai.expect(retrivedTask.assignee).to.equal('Participant1');

@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "clean": "rimraf dist client",
-    "build": "npm run clean && npm run client:generate && tsc",
+    "build": "npm run clean && tsc",
     "prepare": "npm run build",
     "test": "npm run build && mocha -r ts-node/register tests/*.spec.ts --reporter spec",
     "client:generate": "generate-controller-interface -c TaskManagerController"

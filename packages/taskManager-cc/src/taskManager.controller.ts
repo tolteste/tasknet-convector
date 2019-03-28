@@ -31,7 +31,7 @@ export class TaskManagerController extends ConvectorController {
     @Param(yup.string())
     creatorId: string,
     @Param(yup.array().of(yup.string()))
-    prereq: string[] = []
+    prereq: string[]
   ) {
     if (await !this.participantIsCaller(creatorId)) {
       throw new Error(`Participant with creatorId: ${creatorId} does not have identity of a current caller.`)
@@ -70,7 +70,7 @@ export class TaskManagerController extends ConvectorController {
     @Param(yup.string().trim())
     description: string,
     @Param(yup.array())
-    prereq: string[] = []
+    prereq: string[]
   ) {
     const task = await this.getTask(id);
 
