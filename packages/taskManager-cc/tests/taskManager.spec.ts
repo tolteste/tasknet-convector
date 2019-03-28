@@ -20,10 +20,10 @@ describe('TaskManager', () => {
   let adapter: MockControllerAdapter;
   let taskManagerCtrl: TaskManagerControllerClient;
   let participantCtrl: ParticipantController;
-  let idCreatedTask = null;
-  let idCreatedTask2 = null;
-  let idCreatedTask3 = null;
-  let p1Identity = null;
+  let idCreatedTask;
+  let idCreatedTask2;
+  let idCreatedTask3;
+  let p1Identity;
   let p2Identity = '-----BEGIN CERTIFICATE-----' +
     'MIICjzCCAjWgAwIBAgIUITsRsw5SIJ+33SKwM4j1Dl4cDXQwCgYIKoZIzj0EAwIw' +
     'czELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh' +
