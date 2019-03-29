@@ -21,11 +21,11 @@ export class Task extends ConvectorModel<Task> {
   public readonly type = 'edu.taskmanager.task';
 
   @Required()
-  @Validate(yup.string())
+  @Validate(yup.string().trim())
   public title: string;
 
   @Required()
-  @Validate(yup.string())
+  @Validate(yup.string().trim())
   public description: string;
 
   @Required()

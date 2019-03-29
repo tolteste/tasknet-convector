@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import * as uuid from 'uuid/v4'
 
 import {
   Controller,
@@ -16,49 +15,32 @@ import { print } from 'util';
 @Controller('taskManager')
 export class TaskManagerController extends ConvectorController {
   /**
-   * @param title Shortly describes a specified task
-   * @param description Provides more detailed description of a task
-   * @param creatorId Participant.id that will be set as creator
-   * @param prereq Array<string> with ids of all prerequisite tasks
-   * @returns id of created task
+   * @param task Task that will be inserted distributed database
    */
   @Invokable()
   public async create(
-    @Param(yup.string().required().trim())
-    title: string,
-    @Param(yup.string().required().trim())
-    description: string,
-    @Param(yup.string())
-    creatorId: string,
-    @Param(yup.array().of(yup.string()))
-    prereq: string[]
+    @Param(Task)
+    task: Task
   ) {
-    if (await !this.participantIsCaller(creatorId)) {
-      throw new Error(`Participant with creatorId: ${creatorId} does not have identity of a current caller.`)
+    if (await !this.participantIsCaller(task.creator)) {
+      throw new Error(`Participant with creatorId: ${task.creator} does not have identity of a current caller.`)
     }
-
-    var id = uuid();
     // Checking for colisions
-    var exists = await Task.getOne(id)
-    while (exists.id === id) {
-      // Colision found => generate new uuid
-      id = uuid();
+    var exists = await Task.getOne(task.id)
+    while (exists.id === task.id) {
+      // Colision found
+      throw new Error('Task with that id already exists.')
     }
 
-    let task = new Task(id);
-    // Task initialization
-    task.title = title;
-    if (await this.arePrerequisitesValid(prereq)) {
-      task.prerequisites = prereq;
-    } else {
-      return;
+    if(typeof task.prerequisites === 'undefined'){
+      task.prerequisites = [];
     }
-    task.description = description;
+    await this.arePrerequisitesValid(task.prerequisites)
+
     task.state = TaskState.MODIFIABLE;
     task.created = Date.now();
-    task.creator = creatorId;
+    task.assignee = undefined;
     await task.save();
-    return id;
   }
 
   @Invokable()
@@ -95,7 +77,6 @@ export class TaskManagerController extends ConvectorController {
       task.prerequisites = prereq;
     }
     await task.save();
-    return task
   }
 
   @Invokable()

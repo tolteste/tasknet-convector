@@ -24,11 +24,11 @@ var Task = (function (_super) {
     ], Task.prototype, "type", void 0);
     tslib_1.__decorate([
         convector_core_model_1.Required(),
-        convector_core_model_1.Validate(yup.string())
+        convector_core_model_1.Validate(yup.string().trim())
     ], Task.prototype, "title", void 0);
     tslib_1.__decorate([
         convector_core_model_1.Required(),
-        convector_core_model_1.Validate(yup.string())
+        convector_core_model_1.Validate(yup.string().trim())
     ], Task.prototype, "description", void 0);
     tslib_1.__decorate([
         convector_core_model_1.Required(),

@@ -1,5 +1,6 @@
 // tslint:disable:no-unused-expression
 import { join } from 'path';
+import * as uuid from 'uuid/v4'
 import * as chai from 'chai'
 import { expect } from 'chai';
 import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
@@ -61,7 +62,14 @@ describe('TaskManager', () => {
   });
 
   it('should create a task', async () => {
-    idCreatedTask = await taskManagerCtrl.create('Test title   ', 'Test description   ', 'Participant1',[]);
+
+    idCreatedTask = uuid();
+    let task = new Task(idCreatedTask);
+    task.title = 'Test title   ';
+    task.description = 'Test description   ';
+    task.creator = 'Participant1';
+
+    await taskManagerCtrl.create(task);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask);
     expect(retrivedTask.id).to.exist;
     expect(retrivedTask.title).to.equal("Test title");
@@ -78,7 +86,13 @@ describe('TaskManager', () => {
   });
 
   it('should create a task with prerequisite', async () => {
-    idCreatedTask2 = await taskManagerCtrl.create('Test title 2', 'Test description 2', 'Participant1', [idCreatedTask]);
+    idCreatedTask2 = uuid();
+    let task = new Task(idCreatedTask2);
+    task.title = 'Test title 2';
+    task.description = 'Test description 2';
+    task.creator = 'Participant1';
+    task.prerequisites = [idCreatedTask];
+    await taskManagerCtrl.create(task);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask2);
     expect(retrivedTask.id).to.exist;
     expect(retrivedTask.prerequisites).to.contain(idCreatedTask);
@@ -105,7 +119,12 @@ describe('TaskManager', () => {
   });
 
   it('should assign a participant as an assignee to a task', async () => {
-    idCreatedTask3 = await taskManagerCtrl.create("Test", "Description", "Participant2",[]);
+    idCreatedTask3 = uuid();
+    let task = new Task(idCreatedTask3);
+    task.title = 'Test';
+    task.description = 'Description';
+    task.creator = 'Participant2';
+    await taskManagerCtrl.create(task);
     await taskManagerCtrl.assign(idCreatedTask3, 'Participant1');
     let retrivedTask = await adapter.getById<Task>(idCreatedTask3);
     chai.expect(retrivedTask.assignee).to.equal('Participant1');

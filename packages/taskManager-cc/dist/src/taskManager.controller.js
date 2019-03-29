@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var yup = require("yup");
-var uuid = require("uuid/v4");
 var convector_core_controller_1 = require("@worldsibu/convector-core-controller");
 var taskManager_model_1 = require("./taskManager.model");
 var participant_cc_1 = require("participant-cc");
@@ -11,41 +10,35 @@ var TaskManagerController = (function (_super) {
     function TaskManagerController() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    TaskManagerController.prototype.create = function (title, description, creatorId, prereq) {
+    TaskManagerController.prototype.create = function (task) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var id, exists, task;
+            var exists;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, !this.participantIsCaller(creatorId)];
+                    case 0: return [4, !this.participantIsCaller(task.creator)];
                     case 1:
                         if (_a.sent()) {
-                            throw new Error("Participant with creatorId: " + creatorId + " does not have identity of a current caller.");
+                            throw new Error("Participant with creatorId: " + task.creator + " does not have identity of a current caller.");
                         }
-                        id = uuid();
-                        return [4, taskManager_model_1.Task.getOne(id)];
+                        return [4, taskManager_model_1.Task.getOne(task.id)];
                     case 2:
                         exists = _a.sent();
-                        while (exists.id === id) {
-                            id = uuid();
+                        while (exists.id === task.id) {
+                            throw new Error('Task with that id already exists.');
                         }
-                        task = new taskManager_model_1.Task(id);
-                        task.title = title;
-                        return [4, this.arePrerequisitesValid(prereq)];
+                        if (typeof task.prerequisites === 'undefined') {
+                            task.prerequisites = [];
+                        }
+                        return [4, this.arePrerequisitesValid(task.prerequisites)];
                     case 3:
-                        if (_a.sent()) {
-                            task.prerequisites = prereq;
-                        }
-                        else {
-                            return [2];
-                        }
-                        task.description = description;
+                        _a.sent();
                         task.state = taskManager_model_1.TaskState.MODIFIABLE;
                         task.created = Date.now();
-                        task.creator = creatorId;
+                        task.assignee = undefined;
                         return [4, task.save()];
                     case 4:
                         _a.sent();
-                        return [2, id];
+                        return [2];
                 }
             });
         });
@@ -83,7 +76,7 @@ var TaskManagerController = (function (_super) {
                         return [4, task.save()];
                     case 4:
                         _a.sent();
-                        return [2, task];
+                        return [2];
                 }
             });
         });
@@ -316,10 +309,7 @@ var TaskManagerController = (function (_super) {
     };
     tslib_1.__decorate([
         convector_core_controller_1.Invokable(),
-        tslib_1.__param(0, convector_core_controller_1.Param(yup.string().required().trim())),
-        tslib_1.__param(1, convector_core_controller_1.Param(yup.string().required().trim())),
-        tslib_1.__param(2, convector_core_controller_1.Param(yup.string())),
-        tslib_1.__param(3, convector_core_controller_1.Param(yup.array().of(yup.string())))
+        tslib_1.__param(0, convector_core_controller_1.Param(taskManager_model_1.Task))
     ], TaskManagerController.prototype, "create", null);
     tslib_1.__decorate([
         convector_core_controller_1.Invokable(),
