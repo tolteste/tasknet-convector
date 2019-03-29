@@ -7,26 +7,27 @@
   "files": [
     "dist/*"
   ],
-  "scripts": { 
-    "clean": "rimraf dist client", 
-    "build": "npm run clean && tsc", 
-    "prepare": "npm run build", 
-    "test": "echo 'No tests specified'", 
+  "scripts": {
+    "clean": "rimraf dist client",
+    "build": "npm run clean && tsc",
+    "prepare": "npm run build",
+    "test": "echo 'No tests specified'",
     "client:generate": "generate-controller-interface -c ParticipantController"
   },
-  "dependencies": { 
-    "yup": "^0.27.0", 
-    "reflect-metadata": "^0.1.13", 
-    "@worldsibu/convector-core-model": "^1.3.3", 
-    "@worldsibu/convector-core-controller": "^1.3.3"
+  "dependencies": {
+    "yup": "^0.27.0",
+    "reflect-metadata": "^0.1.13",
+    "@worldsibu/convector-core": "~1.3.3",
+    "@worldsibu/convector-platform-fabric": "~1.3.3",
+    "@worldsibu/convector-rest-api-decorators": "1.0.5"
   },
-  "devDependencies": {  
-    "@types/node": "^10.12.5",  
-    "rimraf": "^2.6.2",  
-    "mocha": "^5.0.3",  
-    "chai": "^4.2.0",  
-    "@types/mocha": "^5.2.6",  
-    "@types/chai": "^4.1.7" 
-  } 
+  "devDependencies": {
+    "@types/node": "^10.12.5",
+    "rimraf": "^2.6.2",
+    "mocha": "^5.0.3",
+    "chai": "^4.2.0",
+    "@types/mocha": "^5.2.6",
+    "@types/chai": "^4.1.7",
+    "@worldsibu/convector-storage-couchdb": "~1.3.3"
+  }
 }
-
