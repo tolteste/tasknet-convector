@@ -1,5 +1,5 @@
 {
-  "name": "taskManager-cc",
+  "name": "taskmanager-cc",
   "version": "0.1.0",
   "description": "Chaincodes package for taskManager",
   "main": "./dist/src/index.js",

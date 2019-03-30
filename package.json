@@ -1,5 +1,5 @@
 {
-  "name": "tasknetConvector",
+  "name": "tasknet-convector",
   "version": "0.1.0",
   "description": "Bootstrap project for Chaincodes tasknetConvector",
   "files": [
@@ -22,8 +22,8 @@
   },
   "devDependencies": {
     "@worldsibu/convector-adapter-mock": "^1.3.0",
-    "@worldsibu/convector-tool-chaincode-manager": "^1.3.0",
-    "@worldsibu/convector-tool-dev-env": "^1.3.0",
+    "@worldsibu/convector-tool-chaincode-manager": "^1.3.3",
+    "@worldsibu/convector-tool-dev-env": "^1.3.3",
     "@worldsibu/hurley": "^1.0.0",
     "fabric-ca-client": "~1.4.0",
     "fabric-client": "~1.4.0",
