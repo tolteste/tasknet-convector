@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var yup = require("yup");
 var convector_core_controller_1 = require("@worldsibu/convector-core-controller");
+var convector_rest_api_decorators_1 = require("@worldsibu/convector-rest-api-decorators");
 var taskManager_model_1 = require("./taskManager.model");
 var participant_cc_1 = require("participant-cc");
 var TaskManagerController = (function (_super) {
@@ -308,10 +309,12 @@ var TaskManagerController = (function (_super) {
         });
     };
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.Create('Task'),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(taskManager_model_1.Task))
     ], TaskManagerController.prototype, "create", null);
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string())),
         tslib_1.__param(1, convector_core_controller_1.Param(yup.string().trim())),
@@ -319,27 +322,33 @@ var TaskManagerController = (function (_super) {
         tslib_1.__param(3, convector_core_controller_1.Param(yup.array()))
     ], TaskManagerController.prototype, "modify", null);
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string())),
         tslib_1.__param(1, convector_core_controller_1.Param(yup.string()))
     ], TaskManagerController.prototype, "assign", null);
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskManagerController.prototype, "passToReview", null);
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskManagerController.prototype, "approve", null);
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskManagerController.prototype, "revoke", null);
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskManagerController.prototype, "rework", null);
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskManagerController.prototype, "delete", null);

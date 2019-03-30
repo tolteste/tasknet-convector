@@ -6,7 +6,12 @@ import {
   Invokable,
   Param
 } from '@worldsibu/convector-core-controller';
-
+import {
+  GetById,
+  GetAll,
+  Create,
+  Service
+} from '@worldsibu/convector-rest-api-decorators';
 import { Task, TaskState } from './taskManager.model';
 import { Participant } from 'participant-cc';
 import { stringify } from 'querystring';
@@ -17,6 +22,7 @@ export class TaskManagerController extends ConvectorController {
   /**
    * @param task Task that will be inserted distributed database
    */
+  @Create('Task')
   @Invokable()
   public async create(
     @Param(Task)
@@ -32,7 +38,7 @@ export class TaskManagerController extends ConvectorController {
       throw new Error('Task with that id already exists.')
     }
 
-    if(typeof task.prerequisites === 'undefined'){
+    if (typeof task.prerequisites === 'undefined') {
       task.prerequisites = [];
     }
     await this.arePrerequisitesValid(task.prerequisites)
@@ -43,6 +49,7 @@ export class TaskManagerController extends ConvectorController {
     await task.save();
   }
 
+  @Service()
   @Invokable()
   public async modify(
     @Param(yup.string())
@@ -79,6 +86,7 @@ export class TaskManagerController extends ConvectorController {
     await task.save();
   }
 
+  @Service()
   @Invokable()
   public async assign(
     @Param(yup.string())
@@ -104,6 +112,7 @@ export class TaskManagerController extends ConvectorController {
     await task.save();
   }
 
+  @Service()
   @Invokable()
   public async passToReview(
     @Param(yup.string())
@@ -120,6 +129,7 @@ export class TaskManagerController extends ConvectorController {
     await task.save();
   }
 
+  @Service()
   @Invokable()
   public async approve(
     @Param(yup.string())
@@ -136,6 +146,7 @@ export class TaskManagerController extends ConvectorController {
     await task.save();
   }
 
+  @Service()
   @Invokable()
   public async revoke(
     @Param(yup.string())
@@ -154,6 +165,7 @@ export class TaskManagerController extends ConvectorController {
     await task.save();
   }
 
+  @Service()
   @Invokable()
   public async rework(
     @Param(yup.string())
@@ -170,6 +182,7 @@ export class TaskManagerController extends ConvectorController {
     await task.save();
   }
 
+  @Service()
   @Invokable()
   public async delete(
     @Param(yup.string())
@@ -180,7 +193,7 @@ export class TaskManagerController extends ConvectorController {
       throw new Error(`Only creator can delete a task.`);
     }
     if (task.state !== TaskState.MODIFIABLE) {
-    throw new Error(`Can't delete a task that is not MODIFIABLE.`)
+      throw new Error(`Can't delete a task that is not MODIFIABLE.`)
     }
     await task.delete()
   }
