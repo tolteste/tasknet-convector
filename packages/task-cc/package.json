@@ -1,5 +1,5 @@
 {
-  "name": "taskmanager-cc",
+  "name": "task-cc",
   "version": "0.1.0",
   "description": "Chaincodes package for taskManager",
   "main": "./dist/src/index.js",
@@ -11,8 +11,7 @@
     "clean": "rimraf dist client",
     "build": "npm run clean && tsc",
     "prepare": "npm run build",
-    "test": "npm run build && mocha -r ts-node/register tests/*.spec.ts --reporter spec",
-    "client:generate": "generate-controller-interface -c TaskManagerController"
+    "test": "npm run build && mocha -r ts-node/register tests/*.spec.ts --reporter spec"
   },
   "dependencies": {
     "yup": "^0.27.0",

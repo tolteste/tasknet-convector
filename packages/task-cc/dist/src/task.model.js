@@ -53,4 +53,4 @@ var Task = (function (_super) {
     return Task;
 }(convector_core_model_1.ConvectorModel));
 exports.Task = Task;
-//# sourceMappingURL=taskManager.model.js.map
+//# sourceMappingURL=task.model.js.map

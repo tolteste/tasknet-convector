@@ -1,6 +1,6 @@
 import { ConvectorController } from '@worldsibu/convector-core-controller';
-import { Task } from './taskManager.model';
-export declare class TaskManagerController extends ConvectorController {
+import { Task } from './task.model';
+export declare class TaskController extends ConvectorController {
     create(task: Task): Promise<void>;
     modify(id: string, title: string, description: string, prereq: string[]): Promise<void>;
     assign(taskId: string, assigneeId: string): Promise<void>;

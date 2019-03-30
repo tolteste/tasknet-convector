@@ -4,14 +4,14 @@ var tslib_1 = require("tslib");
 var yup = require("yup");
 var convector_core_controller_1 = require("@worldsibu/convector-core-controller");
 var convector_rest_api_decorators_1 = require("@worldsibu/convector-rest-api-decorators");
-var taskManager_model_1 = require("./taskManager.model");
+var task_model_1 = require("./task.model");
 var participant_cc_1 = require("participant-cc");
-var TaskManagerController = (function (_super) {
-    tslib_1.__extends(TaskManagerController, _super);
-    function TaskManagerController() {
+var TaskController = (function (_super) {
+    tslib_1.__extends(TaskController, _super);
+    function TaskController() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    TaskManagerController.prototype.create = function (task) {
+    TaskController.prototype.create = function (task) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var exists;
             return tslib_1.__generator(this, function (_a) {
@@ -21,7 +21,7 @@ var TaskManagerController = (function (_super) {
                         if (_a.sent()) {
                             throw new Error("Participant with creatorId: " + task.creator + " does not have identity of a current caller.");
                         }
-                        return [4, taskManager_model_1.Task.getOne(task.id)];
+                        return [4, task_model_1.Task.getOne(task.id)];
                     case 2:
                         exists = _a.sent();
                         while (exists.id === task.id) {
@@ -33,7 +33,7 @@ var TaskManagerController = (function (_super) {
                         return [4, this.arePrerequisitesValid(task.prerequisites)];
                     case 3:
                         _a.sent();
-                        task.state = taskManager_model_1.TaskState.MODIFIABLE;
+                        task.state = task_model_1.TaskState.MODIFIABLE;
                         task.created = Date.now();
                         task.assignee = undefined;
                         return [4, task.save()];
@@ -44,7 +44,7 @@ var TaskManagerController = (function (_super) {
             });
         });
     };
-    TaskManagerController.prototype.modify = function (id, title, description, prereq) {
+    TaskController.prototype.modify = function (id, title, description, prereq) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
             return tslib_1.__generator(this, function (_a) {
@@ -57,7 +57,7 @@ var TaskManagerController = (function (_super) {
                         if ((_a.sent()) !== true) {
                             throw new Error('Only creator of the task is able to make modifications.');
                         }
-                        if (task.state !== taskManager_model_1.TaskState.MODIFIABLE) {
+                        if (task.state !== task_model_1.TaskState.MODIFIABLE) {
                             throw new Error("Can't modify a task that is not in MODIFIABLE state.");
                         }
                         if (title.length > 0) {
@@ -82,7 +82,7 @@ var TaskManagerController = (function (_super) {
             });
         });
     };
-    TaskManagerController.prototype.assign = function (taskId, assigneeId) {
+    TaskController.prototype.assign = function (taskId, assigneeId) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task, _a;
             return tslib_1.__generator(this, function (_b) {
@@ -102,11 +102,11 @@ var TaskManagerController = (function (_super) {
                         if (_a) {
                             throw new Error("Task can't be assigned to this participant.");
                         }
-                        if (task.state !== taskManager_model_1.TaskState.MODIFIABLE) {
+                        if (task.state !== task_model_1.TaskState.MODIFIABLE) {
                             throw new Error("Can't assign task that is not in MODIFIABLE state.");
                         }
                         task.assignee = assigneeId;
-                        task.state = taskManager_model_1.TaskState.IN_PROGRESS;
+                        task.state = task_model_1.TaskState.IN_PROGRESS;
                         return [4, task.save()];
                     case 5:
                         _b.sent();
@@ -115,7 +115,7 @@ var TaskManagerController = (function (_super) {
             });
         });
     };
-    TaskManagerController.prototype.passToReview = function (taskId) {
+    TaskController.prototype.passToReview = function (taskId) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
             return tslib_1.__generator(this, function (_a) {
@@ -128,10 +128,10 @@ var TaskManagerController = (function (_super) {
                         if ((_a.sent()) !== true) {
                             throw new Error("Only assignee can pass a task to a review.");
                         }
-                        if (task.state !== taskManager_model_1.TaskState.IN_PROGRESS) {
+                        if (task.state !== task_model_1.TaskState.IN_PROGRESS) {
                             throw new Error("Can't pass a task to review. Task is not IN_PROGRESS.");
                         }
-                        task.state = taskManager_model_1.TaskState.IN_REVISION;
+                        task.state = task_model_1.TaskState.IN_REVISION;
                         return [4, task.save()];
                     case 3:
                         _a.sent();
@@ -140,7 +140,7 @@ var TaskManagerController = (function (_super) {
             });
         });
     };
-    TaskManagerController.prototype.approve = function (taskId) {
+    TaskController.prototype.approve = function (taskId) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
             return tslib_1.__generator(this, function (_a) {
@@ -153,10 +153,10 @@ var TaskManagerController = (function (_super) {
                         if ((_a.sent()) !== true) {
                             throw new Error("Only creator can review a task.");
                         }
-                        if (task.state !== taskManager_model_1.TaskState.IN_REVISION) {
+                        if (task.state !== task_model_1.TaskState.IN_REVISION) {
                             throw new Error("Can't end revison of a task. Task is not IN_REVISION state.");
                         }
-                        task.state = taskManager_model_1.TaskState.COMPLETED;
+                        task.state = task_model_1.TaskState.COMPLETED;
                         return [4, task.save()];
                     case 3:
                         _a.sent();
@@ -165,7 +165,7 @@ var TaskManagerController = (function (_super) {
             });
         });
     };
-    TaskManagerController.prototype.revoke = function (taskId) {
+    TaskController.prototype.revoke = function (taskId) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task, _a;
             return tslib_1.__generator(this, function (_b) {
@@ -185,10 +185,10 @@ var TaskManagerController = (function (_super) {
                         if (_a) {
                             throw new Error("Only assignee or creator can revoke a task.");
                         }
-                        if (task.state !== taskManager_model_1.TaskState.IN_PROGRESS) {
+                        if (task.state !== task_model_1.TaskState.IN_PROGRESS) {
                             throw new Error("Can't revoke a task. Task is not IN_PROGRESS state.");
                         }
-                        task.state = taskManager_model_1.TaskState.MODIFIABLE;
+                        task.state = task_model_1.TaskState.MODIFIABLE;
                         task.assignee = undefined;
                         return [4, task.save()];
                     case 5:
@@ -198,7 +198,7 @@ var TaskManagerController = (function (_super) {
             });
         });
     };
-    TaskManagerController.prototype.rework = function (taskId) {
+    TaskController.prototype.rework = function (taskId) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
             return tslib_1.__generator(this, function (_a) {
@@ -211,10 +211,10 @@ var TaskManagerController = (function (_super) {
                         if ((_a.sent()) !== true) {
                             throw new Error("Only creator can demand a rework of a task.");
                         }
-                        if (task.state !== taskManager_model_1.TaskState.IN_REVISION) {
+                        if (task.state !== task_model_1.TaskState.IN_REVISION) {
                             throw new Error("Can't demand rework of a task. Task is not IN_REVISION state.");
                         }
-                        task.state = taskManager_model_1.TaskState.IN_PROGRESS;
+                        task.state = task_model_1.TaskState.IN_PROGRESS;
                         return [4, task.save()];
                     case 3:
                         _a.sent();
@@ -223,7 +223,7 @@ var TaskManagerController = (function (_super) {
             });
         });
     };
-    TaskManagerController.prototype.delete = function (taskId) {
+    TaskController.prototype.delete = function (taskId) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
             return tslib_1.__generator(this, function (_a) {
@@ -236,7 +236,7 @@ var TaskManagerController = (function (_super) {
                         if ((_a.sent()) !== true) {
                             throw new Error("Only creator can delete a task.");
                         }
-                        if (task.state !== taskManager_model_1.TaskState.MODIFIABLE) {
+                        if (task.state !== task_model_1.TaskState.MODIFIABLE) {
                             throw new Error("Can't delete a task that is not MODIFIABLE.");
                         }
                         return [4, task.delete()];
@@ -247,12 +247,12 @@ var TaskManagerController = (function (_super) {
             });
         });
     };
-    TaskManagerController.prototype.getTask = function (id) {
+    TaskController.prototype.getTask = function (id) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, taskManager_model_1.Task.getOne(id)];
+                    case 0: return [4, task_model_1.Task.getOne(id)];
                     case 1:
                         task = _a.sent();
                         if (!task || !task.id) {
@@ -263,7 +263,7 @@ var TaskManagerController = (function (_super) {
             });
         });
     };
-    TaskManagerController.prototype.participantIsCaller = function (participantId) {
+    TaskController.prototype.participantIsCaller = function (participantId) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var participant, activeIdentity;
             return tslib_1.__generator(this, function (_a) {
@@ -283,7 +283,7 @@ var TaskManagerController = (function (_super) {
             });
         });
     };
-    TaskManagerController.prototype.arePrerequisitesValid = function (prerequisties) {
+    TaskController.prototype.arePrerequisitesValid = function (prerequisties) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var tasks;
             return tslib_1.__generator(this, function (_a) {
@@ -292,7 +292,7 @@ var TaskManagerController = (function (_super) {
                         if (prerequisties.length === 0) {
                             return [2, true];
                         }
-                        return [4, taskManager_model_1.Task.getAll()];
+                        return [4, task_model_1.Task.getAll()];
                     case 1:
                         tasks = _a.sent();
                         prerequisties.forEach(function (id) {
@@ -311,8 +311,8 @@ var TaskManagerController = (function (_super) {
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Create('Task'),
         convector_core_controller_1.Invokable(),
-        tslib_1.__param(0, convector_core_controller_1.Param(taskManager_model_1.Task))
-    ], TaskManagerController.prototype, "create", null);
+        tslib_1.__param(0, convector_core_controller_1.Param(task_model_1.Task))
+    ], TaskController.prototype, "create", null);
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
@@ -320,42 +320,42 @@ var TaskManagerController = (function (_super) {
         tslib_1.__param(1, convector_core_controller_1.Param(yup.string().trim())),
         tslib_1.__param(2, convector_core_controller_1.Param(yup.string().trim())),
         tslib_1.__param(3, convector_core_controller_1.Param(yup.array()))
-    ], TaskManagerController.prototype, "modify", null);
+    ], TaskController.prototype, "modify", null);
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string())),
         tslib_1.__param(1, convector_core_controller_1.Param(yup.string()))
-    ], TaskManagerController.prototype, "assign", null);
+    ], TaskController.prototype, "assign", null);
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
-    ], TaskManagerController.prototype, "passToReview", null);
+    ], TaskController.prototype, "passToReview", null);
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
-    ], TaskManagerController.prototype, "approve", null);
+    ], TaskController.prototype, "approve", null);
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
-    ], TaskManagerController.prototype, "revoke", null);
+    ], TaskController.prototype, "revoke", null);
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
-    ], TaskManagerController.prototype, "rework", null);
+    ], TaskController.prototype, "rework", null);
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
-    ], TaskManagerController.prototype, "delete", null);
-    TaskManagerController = tslib_1.__decorate([
+    ], TaskController.prototype, "delete", null);
+    TaskController = tslib_1.__decorate([
         convector_core_controller_1.Controller('taskManager')
-    ], TaskManagerController);
-    return TaskManagerController;
+    ], TaskController);
+    return TaskController;
 }(convector_core_controller_1.ConvectorController));
-exports.TaskManagerController = TaskManagerController;
-//# sourceMappingURL=taskManager.controller.js.map
+exports.TaskController = TaskController;
+//# sourceMappingURL=task.controller.js.map

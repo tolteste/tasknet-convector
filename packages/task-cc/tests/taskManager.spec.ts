@@ -6,18 +6,18 @@ import { expect } from 'chai';
 import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
 import 'mocha';
 import * as chaiAsPromised from 'chai-as-promised';
-import { Task, TaskState } from '../src/taskManager.model';
+import { Task, TaskState } from '../src/task.model';
 import { ClientFactory } from '@worldsibu/convector-core';
 import { ParticipantController } from '../../participant-cc/src';
-import { TaskManagerController } from '../src';
+import { TaskController } from '../src';
 import { Participant } from '../../participant-cc/src';
 import { print, isNull } from 'util';
 
 
-describe('TaskManager', () => {
+describe('Task', () => {
   chai.use(chaiAsPromised);
   let adapter: MockControllerAdapter;
-  let taskManagerCtrl: TaskManagerController;
+  let taskManagerCtrl: TaskController;
   let participantCtrl: ParticipantController;
   let idCreatedTask;
   let idCreatedTask2;
@@ -45,7 +45,7 @@ describe('TaskManager', () => {
     await adapter.init([
       {
         version: '*',
-        controller: 'TaskManagerController',
+        controller: 'TaskController',
         name: join(__dirname, '..')
       },
       {
@@ -54,7 +54,7 @@ describe('TaskManager', () => {
         name: join(__dirname, '../../participant-cc')
       }
     ]);
-    taskManagerCtrl = ClientFactory(TaskManagerController, adapter);
+    taskManagerCtrl = ClientFactory(TaskController, adapter);
     participantCtrl = ClientFactory(ParticipantController, adapter);
     await participantCtrl.register('Participant1');
     let p1 = await adapter.getById<Participant>('Participant1');

@@ -14,9 +14,9 @@
       "controller": "ParticipantController"
     },
     {
-      "name": "taskManager-cc",
-      "version": "file:./packages/taskManager-cc",
-      "controller": "TaskManagerController"
+      "name": "task-cc",
+      "version": "file:./packages/task-cc",
+      "controller": "TaskController"
     }
   ],
   "policy": {

@@ -12,13 +12,13 @@ import {
   Create,
   Service
 } from '@worldsibu/convector-rest-api-decorators';
-import { Task, TaskState } from './taskManager.model';
+import { Task, TaskState } from './task.model';
 import { Participant } from 'participant-cc';
 import { stringify } from 'querystring';
 import { print } from 'util';
 
 @Controller('taskManager')
-export class TaskManagerController extends ConvectorController {
+export class TaskController extends ConvectorController {
   /**
    * @param task Task that will be inserted distributed database
    */
