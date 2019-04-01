@@ -11,7 +11,7 @@ import { BaseStorage } from '@worldsibu/convector-core-storage';
 import { Participant } from './participant.model';
 import { ClientIdentity } from 'fabric-shim';
 
-@Controller('participant')
+@Controller('Participant')
 export class ParticipantController extends ConvectorController {
   get fullIdentity(): ClientIdentity {
     const stub = (BaseStorage.current as any).stubHelper;

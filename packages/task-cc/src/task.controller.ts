@@ -17,7 +17,7 @@ import { Participant } from 'participant-cc';
 import { stringify } from 'querystring';
 import { print } from 'util';
 
-@Controller('taskManager')
+@Controller('Task')
 export class TaskController extends ConvectorController {
   /**
    * @param task Task that will be inserted distributed database

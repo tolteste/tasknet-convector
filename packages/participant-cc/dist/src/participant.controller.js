@@ -120,7 +120,7 @@ var ParticipantController = (function (_super) {
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], ParticipantController.prototype, "get", null);
     ParticipantController = tslib_1.__decorate([
-        convector_core_controller_1.Controller('participant')
+        convector_core_controller_1.Controller('Participant')
     ], ParticipantController);
     return ParticipantController;
 }(convector_core_controller_1.ConvectorController));

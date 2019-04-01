@@ -353,7 +353,7 @@ var TaskController = (function (_super) {
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskController.prototype, "delete", null);
     TaskController = tslib_1.__decorate([
-        convector_core_controller_1.Controller('taskManager')
+        convector_core_controller_1.Controller('Task')
     ], TaskController);
     return TaskController;
 }(convector_core_controller_1.ConvectorController));
