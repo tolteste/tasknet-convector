@@ -6,8 +6,13 @@ import {
   Invokable,
   Param
 } from '@worldsibu/convector-core-controller';
+import {
+  GetById,
+  GetAll,
+  Create,
+  Service
+} from '@worldsibu/convector-rest-api-decorators';
 import { BaseStorage } from '@worldsibu/convector-core-storage';
-
 import { Participant } from './participant.model';
 import { ClientIdentity } from 'fabric-shim';
 
@@ -18,6 +23,7 @@ export class ParticipantController extends ConvectorController {
     return new ClientIdentity(stub.getStub());
   };
 
+  @Service()
   @Invokable()
   public async register(
     @Param(yup.string())
@@ -42,6 +48,7 @@ export class ParticipantController extends ConvectorController {
       throw new Error('Identity exists already, please call changeIdentity fn for updates');
     }
   }
+  @Service()
   @Invokable()
   public async changeIdentity(
     @Param(yup.string())
@@ -86,6 +93,7 @@ export class ParticipantController extends ConvectorController {
     });
     await existing.save();
   }
+  @GetById('Participant')
   @Invokable()
   public async get(
     @Param(yup.string())

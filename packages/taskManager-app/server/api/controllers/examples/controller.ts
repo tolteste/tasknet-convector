@@ -6,6 +6,47 @@ import { Models } from '../../../smartContractModels';
 export class Controller {
 
 
+  async participant_get(req: Request, res: Response) {
+    let cntrl = await ParticipantControllerClient.init();
+    let result = await cntrl.get(req.params.id);
+    if (!result) {
+      return res.status(404);
+    }
+    res.json(result);
+  }
+
+  async participant_register(req: Request, res: Response) {
+    try {
+      let cntrl = await ParticipantControllerClient.init();
+      let params = req.body;
+      
+      let returnObject = await cntrl.register(params.id);
+      if (returnObject === undefined) {
+        return res.status(404);
+      }
+      res.json(returnObject);
+    } catch (ex) {
+      console.log(ex.message, ex.stack);
+      res.status(500).send(ex.stack);
+    }
+  }
+
+  async participant_changeIdentity(req: Request, res: Response) {
+    try {
+      let cntrl = await ParticipantControllerClient.init();
+      let params = req.body;
+      
+      let returnObject = await cntrl.changeIdentity(params.id,params.newIdentity);
+      if (returnObject === undefined) {
+        return res.status(404);
+      }
+      res.json(returnObject);
+    } catch (ex) {
+      console.log(ex.message, ex.stack);
+      res.status(500).send(ex.stack);
+    }
+  }
+
 
 
 

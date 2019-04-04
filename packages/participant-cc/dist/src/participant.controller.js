@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var yup = require("yup");
 var convector_core_controller_1 = require("@worldsibu/convector-core-controller");
+var convector_rest_api_decorators_1 = require("@worldsibu/convector-rest-api-decorators");
 var convector_core_storage_1 = require("@worldsibu/convector-core-storage");
 var participant_model_1 = require("./participant.model");
 var fabric_shim_1 = require("fabric-shim");
@@ -107,15 +108,18 @@ var ParticipantController = (function (_super) {
         });
     };
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], ParticipantController.prototype, "register", null);
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string())),
         tslib_1.__param(1, convector_core_controller_1.Param(yup.string()))
     ], ParticipantController.prototype, "changeIdentity", null);
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.GetById('Participant'),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], ParticipantController.prototype, "get", null);

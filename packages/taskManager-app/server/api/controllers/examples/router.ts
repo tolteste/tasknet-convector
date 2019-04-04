@@ -2,6 +2,9 @@ import express from 'express';
 import controller from './controller'
 export default express.Router()
 
+    .get('/participant/participants/:id', controller.participant_get)
+    .post('/participant/register', controller.participant_register)
+    .post('/participant/changeIdentity', controller.participant_changeIdentity)
 
     .post('/task/tasks/', controller.task_create)
     .post('/task/modify', controller.task_modify)

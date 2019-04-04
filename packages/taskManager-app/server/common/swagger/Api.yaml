@@ -98,6 +98,30 @@ fingerprint: a_text} ]
           example: [ a_text, a_text ]
    
 
+    participant_registerBody:
+       type: object
+       title: participant_registerParams
+       required:
+          - id
+       properties:
+         id:
+           type: string
+           example: a_text
+
+    participant_changeIdentityBody:
+       type: object
+       title: participant_changeIdentityParams
+       required:
+          - id
+          - newIdentity
+       properties:
+         id:
+           type: string
+           example: a_text
+         newIdentity:
+           type: string
+           example: a_text
+
     task_modifyBody:
        type: object
        title: task_modifyParams
@@ -189,6 +213,58 @@ fingerprint: a_text} ]
 paths:
 
 
+
+  /participant/participants/{id}:
+    get:
+      tags:
+        - Participants
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the participant to retrieve
+          type: string
+      responses:
+        200:
+          description: Return the participant with the specified id
+        404:
+          description: Participant not found 
+
+
+  /participant/register:
+    post:
+      tags:
+        - register
+      description: register
+      parameters:
+        - name: participant_registerParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/participant_registerBody"
+      responses:
+        200:
+          description: register executed correctly
+        500:
+          description: register raised an exception
+
+
+  /participant/changeIdentity:
+    post:
+      tags:
+        - changeIdentity
+      description: changeIdentity
+      parameters:
+        - name: participant_changeIdentityParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/participant_changeIdentityBody"
+      responses:
+        200:
+          description: changeIdentity executed correctly
+        500:
+          description: changeIdentity raised an exception
 
 
   /task/tasks: 
