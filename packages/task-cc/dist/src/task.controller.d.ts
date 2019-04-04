@@ -9,7 +9,7 @@ export declare class TaskController extends ConvectorController {
     revoke(taskId: string): Promise<void>;
     rework(taskId: string): Promise<void>;
     delete(taskId: string): Promise<void>;
-    private getTask(id);
-    private participantIsCaller(participantId);
-    private arePrerequisitesValid(prerequisties);
+    private getTask;
+    private participantIsCaller;
+    private arePrerequisitesValid;
 }

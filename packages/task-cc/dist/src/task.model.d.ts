@@ -4,10 +4,10 @@ export declare enum TaskState {
     IN_PROGRESS = 1,
     IN_REVISION = 2,
     COMPLETED = 3,
-    CANCELED = 4,
+    CANCELED = 4
 }
 export declare class Task extends ConvectorModel<Task> {
-    readonly type: string;
+    readonly type = "edu.taskmanager.task";
     title: string;
     description: string;
     state: TaskState;

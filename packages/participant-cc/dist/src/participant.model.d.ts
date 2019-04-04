@@ -5,7 +5,7 @@ export interface x509Identities {
 }
 export declare const x509Identities: any;
 export declare class Participant extends ConvectorModel<Participant> {
-    readonly type: string;
+    readonly type = "io.worldsibu.examples.participant";
     name: string;
     msp: string;
     identities: x509Identities[];
