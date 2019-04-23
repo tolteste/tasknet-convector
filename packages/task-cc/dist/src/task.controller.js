@@ -11,31 +11,37 @@ var TaskController = (function (_super) {
     function TaskController() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    TaskController.prototype.create = function (task) {
+    TaskController.prototype.create = function (id, title, description, creatorId, prereq) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var exists;
+            var exists, task;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, !this.participantIsCaller(task.creator)];
+                    case 0: return [4, !this.participantIsCaller(creatorId)];
                     case 1:
                         if (_a.sent()) {
-                            throw new Error("Participant with creatorId: " + task.creator + " does not have identity of a current caller.");
+                            throw new Error("Participant with creatorId: " + creatorId + " does not have identity of a current caller.");
                         }
-                        return [4, task_model_1.Task.getOne(task.id)];
+                        return [4, task_model_1.Task.getOne(id)];
                     case 2:
                         exists = _a.sent();
-                        while (exists.id === task.id) {
+                        if (exists && exists.id) {
                             throw new Error('Task with that id already exists.');
                         }
-                        if (typeof task.prerequisites === 'undefined') {
+                        task = new task_model_1.Task(id);
+                        if (typeof prereq === 'undefined') {
                             task.prerequisites = [];
                         }
-                        return [4, this.arePrerequisitesValid(task.prerequisites)];
+                        return [4, this.arePrerequisitesValid];
                     case 3:
-                        _a.sent();
+                        if (_a.sent()) {
+                            task.prerequisites = prereq;
+                        }
+                        task.title = title;
+                        task.description = description;
                         task.state = task_model_1.TaskState.MODIFIABLE;
                         task.created = Date.now();
                         task.assignee = undefined;
+                        task.creator = creatorId;
                         return [4, task.save()];
                     case 4:
                         _a.sent();
@@ -247,6 +253,22 @@ var TaskController = (function (_super) {
             });
         });
     };
+    TaskController.prototype.get = function (id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var existing;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, task_model_1.Task.getOne(id)];
+                    case 1:
+                        existing = _a.sent();
+                        if (!existing || !existing.id) {
+                            throw new Error("No task exists with that ID " + id);
+                        }
+                        return [2, existing];
+                }
+            });
+        });
+    };
     TaskController.prototype.getTask = function (id) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
@@ -309,9 +331,13 @@ var TaskController = (function (_super) {
         });
     };
     tslib_1.__decorate([
-        convector_rest_api_decorators_1.Create('Task'),
+        convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
-        tslib_1.__param(0, convector_core_controller_1.Param(task_model_1.Task))
+        tslib_1.__param(0, convector_core_controller_1.Param(yup.string().required())),
+        tslib_1.__param(1, convector_core_controller_1.Param(yup.string().required().trim())),
+        tslib_1.__param(2, convector_core_controller_1.Param(yup.string().required().trim())),
+        tslib_1.__param(3, convector_core_controller_1.Param(yup.string())),
+        tslib_1.__param(4, convector_core_controller_1.Param(yup.array().of(yup.string())))
     ], TaskController.prototype, "create", null);
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),
@@ -352,6 +378,11 @@ var TaskController = (function (_super) {
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskController.prototype, "delete", null);
+    tslib_1.__decorate([
+        convector_rest_api_decorators_1.GetById('Task'),
+        convector_core_controller_1.Invokable(),
+        tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
+    ], TaskController.prototype, "get", null);
     TaskController = tslib_1.__decorate([
         convector_core_controller_1.Controller('Task')
     ], TaskController);

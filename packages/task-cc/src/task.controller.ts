@@ -20,32 +20,51 @@ import { print } from 'util';
 @Controller('Task')
 export class TaskController extends ConvectorController {
   /**
-   * @param task Task that will be inserted distributed database
-   */
-  @Create('Task')
+   * @param id Identifier string of created task
+   * @param title Shortly describes a specified task
+   * @param description Provides more detailed description of a task
+   * @param creatorId Participant.id that will be set as creator
+   * @param prereq Array<string> with ids of all prerequisite tasks
+   * @returns id of created task
+   * */
+  @Service()
   @Invokable()
   public async create(
-    @Param(Task)
-    task: Task
+    @Param(yup.string().required())
+    id: string,
+    @Param(yup.string().required().trim())
+    title: string,
+    @Param(yup.string().required().trim())
+    description: string,
+    @Param(yup.string())
+    creatorId: string,
+    @Param(yup.array().of(yup.string()))
+    prereq: string[]
   ) {
-    if (await !this.participantIsCaller(task.creator)) {
-      throw new Error(`Participant with creatorId: ${task.creator} does not have identity of a current caller.`)
+    if (await !this.participantIsCaller(creatorId)) {
+      throw new Error(`Participant with creatorId: ${creatorId} does not have identity of a current caller.`)
     }
     // Checking for colisions
-    var exists = await Task.getOne(task.id)
-    while (exists.id === task.id) {
+    var exists = await Task.getOne(id)
+    if (exists && exists.id) {
       // Colision found
       throw new Error('Task with that id already exists.')
     }
 
-    if (typeof task.prerequisites === 'undefined') {
+    let task = new Task(id);
+    // Task initialization
+    if (typeof prereq === 'undefined') {
       task.prerequisites = [];
     }
-    await this.arePrerequisitesValid(task.prerequisites)
-
+    if (await this.arePrerequisitesValid) {
+      task.prerequisites = prereq;
+    }
+    task.title = title;
+    task.description = description;
     task.state = TaskState.MODIFIABLE;
     task.created = Date.now();
     task.assignee = undefined;
+    task.creator = creatorId;
     await task.save();
   }
 
@@ -196,6 +215,19 @@ export class TaskController extends ConvectorController {
       throw new Error(`Can't delete a task that is not MODIFIABLE.`)
     }
     await task.delete()
+  }
+
+  @GetById('Task')
+  @Invokable()
+  public async get(
+    @Param(yup.string())
+    id: string
+  ) {
+    const existing = await Task.getOne(id);
+    if (!existing || !existing.id) {
+      throw new Error(`No task exists with that ID ${id}`);
+    }
+    return existing;
   }
 
   //========================================================================

@@ -50,6 +50,15 @@ export class Controller {
 
 
 
+  async task_get(req: Request, res: Response) {
+    let cntrl = await TaskControllerClient.init();
+    let result = await cntrl.get(req.params.id);
+    if (!result) {
+      return res.status(404);
+    }
+    res.json(result);
+  }
+
   async task_create(req: Request, res: Response) {
     try {
       let cntrl = await TaskControllerClient.init();

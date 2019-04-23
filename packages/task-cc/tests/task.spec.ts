@@ -62,14 +62,8 @@ describe('Task', () => {
   });
 
   it('should create a task', async () => {
-
     idCreatedTask = uuid();
-    let task = new Task(idCreatedTask);
-    task.title = 'Test title   ';
-    task.description = 'Test description   ';
-    task.creator = 'Participant1';
-
-    await taskManagerCtrl.create(task);
+    await taskManagerCtrl.create(idCreatedTask, 'Test title   ', 'Test description   ', 'Participant1', []);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask);
     expect(retrivedTask.id).to.exist;
     expect(retrivedTask.title).to.equal("Test title");
@@ -78,7 +72,7 @@ describe('Task', () => {
   });
 
   it('should modify a task with trimmed title and description', async () => {
-    await taskManagerCtrl.modify(idCreatedTask, "Foo title   ", "  Foo description",[]);
+    await taskManagerCtrl.modify(idCreatedTask, "Foo title   ", "  Foo description", []);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask);
     expect(retrivedTask.title).to.equal("Foo title");
     expect(retrivedTask.description).to.equal("Foo description");
@@ -87,12 +81,7 @@ describe('Task', () => {
 
   it('should create a task with prerequisite', async () => {
     idCreatedTask2 = uuid();
-    let task = new Task(idCreatedTask2);
-    task.title = 'Test title 2';
-    task.description = 'Test description 2';
-    task.creator = 'Participant1';
-    task.prerequisites = [idCreatedTask];
-    await taskManagerCtrl.create(task);
+    await taskManagerCtrl.create(idCreatedTask2, 'Test title 2', 'Test description 2', 'Participant1', [idCreatedTask]);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask2);
     expect(retrivedTask.id).to.exist;
     expect(retrivedTask.prerequisites).to.contain(idCreatedTask);
@@ -120,11 +109,7 @@ describe('Task', () => {
 
   it('should assign a participant as an assignee to a task', async () => {
     idCreatedTask3 = uuid();
-    let task = new Task(idCreatedTask3);
-    task.title = 'Test';
-    task.description = 'Description';
-    task.creator = 'Participant2';
-    await taskManagerCtrl.create(task);
+    await taskManagerCtrl.create(idCreatedTask3, "Test", "Description", "Participant2", []);
     await taskManagerCtrl.assign(idCreatedTask3, 'Participant1');
     let retrivedTask = await adapter.getById<Task>(idCreatedTask3);
     chai.expect(retrivedTask.assignee).to.equal('Participant1');

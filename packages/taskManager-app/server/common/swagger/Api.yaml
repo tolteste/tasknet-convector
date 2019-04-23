@@ -2,9 +2,9 @@
 swagger: "2.0"
 info:
   version: 1.0.0
-  title: taskmanager
-  description: taskmanager REST API Application
-basePath: /api/v1/taskmanager
+  title: taskmanagerClient
+  description: taskmanagerClient REST API Application
+basePath: /api/v1/taskmanagerClient
 
 tags:
 
@@ -283,6 +283,22 @@ paths:
         200:
           description: Successful insertion of tasks 
 
+
+  /task/tasks/{id}:
+    get:
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the task to retrieve
+          type: string
+      responses:
+        200:
+          description: Return the task with the specified id
+        404:
+          description: Task not found 
 
 
   /task/modify:

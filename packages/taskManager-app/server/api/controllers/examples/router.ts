@@ -7,6 +7,7 @@ export default express.Router()
     .post('/participant/changeIdentity', controller.participant_changeIdentity)
 
     .post('/task/tasks/', controller.task_create)
+    .get('/task/tasks/:id', controller.task_get)
     .post('/task/modify', controller.task_modify)
     .post('/task/assign', controller.task_assign)
     .post('/task/passToReview', controller.task_passToReview)
