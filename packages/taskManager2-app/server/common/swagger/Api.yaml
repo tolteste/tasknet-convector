@@ -1,0 +1,458 @@
+
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: taskmanagerClient2
+  description: taskmanagerClient2 REST API Application
+basePath: /api/v1/taskmanagerClient2
+
+tags:
+
+  - name: Participants
+    description: Simple participant endpoints
+
+  - name: Tasks
+    description: Simple task endpoints
+
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+definitions:
+  
+
+    participant_ParticipantBody:
+      type: object
+      title: Participant
+      required:
+         - id
+         - name
+         - msp
+         - identities
+      properties:
+        id:
+          type: string
+          example: a_text
+        name:
+          type: string
+          example: a_text
+        msp:
+          type: string
+          example: a_text
+        identities:
+          type: array
+          items:
+            type: x509Identities
+          example: [ {
+status: a_text,
+fingerprint: a_text}, {
+status: a_text,
+fingerprint: a_text} ]
+
+    task_TaskBody:
+      type: object
+      title: Task
+      required:
+         - id
+         - title
+         - description
+         - state
+         - created
+         - creator
+         - assignee
+         - prerequisites
+      properties:
+        id:
+          type: string
+          example: a_text
+        title:
+          type: string
+          example: a_text
+        description:
+          type: string
+          example: a_text
+        state:
+          type: integer
+          enum:
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+          example: 0
+        created:
+          type: number
+          example: 123
+        creator:
+          type: string
+          example: a_text
+        assignee:
+          type: string
+          example: a_text
+        prerequisites:
+          type: array
+          items:
+            type: string
+          example: [ a_text, a_text ]
+   
+
+    participant_registerBody:
+       type: object
+       title: participant_registerParams
+       required:
+          - id
+       properties:
+         id:
+           type: string
+           example: a_text
+
+    participant_changeIdentityBody:
+       type: object
+       title: participant_changeIdentityParams
+       required:
+          - id
+          - newIdentity
+       properties:
+         id:
+           type: string
+           example: a_text
+         newIdentity:
+           type: string
+           example: a_text
+
+    task_createBody:
+       type: object
+       title: task_createParams
+       required:
+          - taskId
+          - title
+          - description
+          - creatorId
+          - prereq
+       properties:
+         taskId:
+           type: string
+           example: a_text
+         title:
+           type: string
+           example: a_text
+         description:
+           type: string
+           example: a_text
+         creatorId:
+           type: string
+           example: a_text
+         prereq:
+           type: array
+           items:
+            type: string
+           example: [a_text, a_text]
+
+    task_modifyBody:
+       type: object
+       title: task_modifyParams
+       required:
+          - id
+          - title
+          - description
+          - prereq
+       properties:
+         id:
+           type: string
+           example: a_text
+         title:
+           type: string
+           example: a_text
+         description:
+           type: string
+           example: a_text
+         prereq:
+           type: array
+           items:
+            type: string
+           example: [a_text, a_text]
+
+    task_assignBody:
+       type: object
+       title: task_assignParams
+       required:
+          - taskId
+          - assigneeId
+       properties:
+         taskId:
+           type: string
+           example: a_text
+         assigneeId:
+           type: string
+           example: a_text
+
+    task_passToReviewBody:
+       type: object
+       title: task_passToReviewParams
+       required:
+          - taskId
+       properties:
+         taskId:
+           type: string
+           example: a_text
+
+    task_approveBody:
+       type: object
+       title: task_approveParams
+       required:
+          - taskId
+       properties:
+         taskId:
+           type: string
+           example: a_text
+
+    task_revokeBody:
+       type: object
+       title: task_revokeParams
+       required:
+          - taskId
+       properties:
+         taskId:
+           type: string
+           example: a_text
+
+    task_reworkBody:
+       type: object
+       title: task_reworkParams
+       required:
+          - taskId
+       properties:
+         taskId:
+           type: string
+           example: a_text
+
+    task_deleteBody:
+       type: object
+       title: task_deleteParams
+       required:
+          - taskId
+       properties:
+         taskId:
+           type: string
+           example: a_text
+
+paths:
+
+
+
+  /participant/participants/{id}:
+    get:
+      tags:
+        - Participants
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the participant to retrieve
+          type: string
+      responses:
+        200:
+          description: Return the participant with the specified id
+        404:
+          description: Participant not found 
+
+
+  /participant/register:
+    post:
+      tags:
+        - register
+      description: register
+      parameters:
+        - name: participant_registerParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/participant_registerBody"
+      responses:
+        200:
+          description: register executed correctly
+        500:
+          description: register raised an exception
+
+
+  /participant/changeIdentity:
+    post:
+      tags:
+        - changeIdentity
+      description: changeIdentity
+      parameters:
+        - name: participant_changeIdentityParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/participant_changeIdentityBody"
+      responses:
+        200:
+          description: changeIdentity executed correctly
+        500:
+          description: changeIdentity raised an exception
+
+
+
+  /task/tasks/{id}:
+    get:
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the task to retrieve
+          type: string
+      responses:
+        200:
+          description: Return the task with the specified id
+        404:
+          description: Task not found 
+
+
+  /task/create:
+    post:
+      tags:
+        - create
+      description: create
+      parameters:
+        - name: task_createParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/task_createBody"
+      responses:
+        200:
+          description: create executed correctly
+        500:
+          description: create raised an exception
+
+
+  /task/modify:
+    post:
+      tags:
+        - modify
+      description: modify
+      parameters:
+        - name: task_modifyParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/task_modifyBody"
+      responses:
+        200:
+          description: modify executed correctly
+        500:
+          description: modify raised an exception
+
+
+  /task/assign:
+    post:
+      tags:
+        - assign
+      description: assign
+      parameters:
+        - name: task_assignParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/task_assignBody"
+      responses:
+        200:
+          description: assign executed correctly
+        500:
+          description: assign raised an exception
+
+
+  /task/passToReview:
+    post:
+      tags:
+        - passToReview
+      description: passToReview
+      parameters:
+        - name: task_passToReviewParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/task_passToReviewBody"
+      responses:
+        200:
+          description: passToReview executed correctly
+        500:
+          description: passToReview raised an exception
+
+
+  /task/approve:
+    post:
+      tags:
+        - approve
+      description: approve
+      parameters:
+        - name: task_approveParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/task_approveBody"
+      responses:
+        200:
+          description: approve executed correctly
+        500:
+          description: approve raised an exception
+
+
+  /task/revoke:
+    post:
+      tags:
+        - revoke
+      description: revoke
+      parameters:
+        - name: task_revokeParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/task_revokeBody"
+      responses:
+        200:
+          description: revoke executed correctly
+        500:
+          description: revoke raised an exception
+
+
+  /task/rework:
+    post:
+      tags:
+        - rework
+      description: rework
+      parameters:
+        - name: task_reworkParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/task_reworkBody"
+      responses:
+        200:
+          description: rework executed correctly
+        500:
+          description: rework raised an exception
+
+
+  /task/delete:
+    post:
+      tags:
+        - delete
+      description: delete
+      parameters:
+        - name: task_deleteParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/task_deleteBody"
+      responses:
+        200:
+          description: delete executed correctly
+        500:
+          description: delete raised an exception
+

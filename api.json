@@ -1,9 +1,9 @@
 {
-    "selected": "dev",
+    "selected": "dev-org1",
     "environments": [
         {
-            "name": "dev",
-            "PORT": "3000",
+            "name": "dev-org1",
+            "PORT": "3001",
             "LOG_LEVEL": "debug",
             "REQUEST_LIMIT": "100kb",
             "SESSION_SECRET": "mySecret",
@@ -12,6 +12,24 @@
             "USERCERT": "admin",
             "ORGCERT": "org1",
             "NETWORKPROFILE": "/home/stefan/hyperledger-fabric-network/network-profiles/org1.network-profile.yaml",
+            "CHANNEL": "ch1",
+            "CHAINCODE": "taskManager",
+            "COUCHDBVIEW": "ch1_taskManager",
+            "COUCHDB_PORT": "5984",
+            "COUCHDB_HOST": "localhost",
+            "COUCHDB_PROTOCOL": "http"
+        },
+        {
+            "name": "dev-org2",
+            "PORT": "3002",
+            "LOG_LEVEL": "debug",
+            "REQUEST_LIMIT": "100kb",
+            "SESSION_SECRET": "mySecret",
+            "SWAGGER_API_SPEC": "/spec",
+            "KEYSTORE": "/home/stefan/hyperledger-fabric-network/.hfc-org2",
+            "USERCERT": "admin",
+            "ORGCERT": "org2",
+            "NETWORKPROFILE": "/home/stefan/hyperledger-fabric-network/network-profiles/org2.network-profile.yaml",
             "CHANNEL": "ch1",
             "CHAINCODE": "taskManager",
             "COUCHDBVIEW": "ch1_taskManager",

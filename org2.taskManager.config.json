@@ -3,10 +3,10 @@
   "txTimeout": 300000,
   "skipInit": true,
   "channel": "ch1",
-  "keyStore": "/home/stefan/hyperledger-fabric-network/.hfc-org1",
-  "//**INSIDE-DOCKER**//keyStore": "/config/.hfc-org1",
-  "networkProfile": "/home/stefan/hyperledger-fabric-network/network-profiles/org1.network-profile.yaml",
-  "//**INSIDE-DOCKER**//networkProfile": "/config/network-profiles/org1.network-profile.inside-docker.yaml",
+  "keyStore": "/home/stefan/hyperledger-fabric-network/.hfc-org2",
+  "//**INSIDE-DOCKER**//keyStore": "/config/.hfc-org2",
+  "networkProfile": "/home/stefan/hyperledger-fabric-network/network-profiles/org2.network-profile.yaml",
+  "//**INSIDE-DOCKER**//networkProfile": "/config/network-profiles/org2.network-profile.inside-docker.yaml",
   "controllers": [
     {
       "name": "participant-cc",
@@ -14,9 +14,9 @@
       "controller": "ParticipantController"
     },
     {
-      "name": "taskManager-cc",
-      "version": "file:./packages/taskManager-cc",
-      "controller": "TaskManagerController"
+      "name": "task-cc",
+      "version": "file:./packages/task-cc",
+      "controller": "TaskController"
     }
   ],
   "policy": {
