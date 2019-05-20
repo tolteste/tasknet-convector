@@ -2,7 +2,7 @@ import { ConvectorController } from '@worldsibu/convector-core-controller';
 import { Task, Priority } from './task.model';
 export declare class TaskController extends ConvectorController {
     create(id: string, title: string, description: string, priority: Priority, due: Date, ownerId: string, prereq: string[], attachements: string[]): Promise<void>;
-    modify(id: string, title: string, description: string, prereq: string[]): Promise<void>;
+    modify(id: string, title: string, description: string, priority: Priority, due: Date, prereq: string[], attachements: string[]): Promise<void>;
     assign(taskId: string, assigneeId: string): Promise<void>;
     passToReview(taskId: string): Promise<void>;
     approve(taskId: string): Promise<void>;

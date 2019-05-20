@@ -93,8 +93,15 @@ export class TaskController extends ConvectorController {
     title: string,
     @Param(yup.string().trim())
     description: string,
+    @Param(yup.number())
+    priority: Priority,
+    //validation through regexp since yup does not support date validation for Date objects
+    @Param(yup.string().matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/, { excludeEmptyString: true }))
+    due: Date,
     @Param(yup.array())
-    prereq: string[]
+    prereq: string[],
+    @Param(yup.array().of(yup.string()))
+    attachements: string[]
   ) {
     const task = await this.getTask(id);
 
@@ -118,6 +125,10 @@ export class TaskController extends ConvectorController {
     if (await this.arePrerequisitesValid(prereq)) {
       task.prerequisites = prereq;
     }
+    task.priority = priority;
+    task.due = due;
+    task.attachments = attachements;
+    print(attachements);
     await task.save();
   }
 

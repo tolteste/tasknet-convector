@@ -6,6 +6,7 @@ var convector_core_controller_1 = require("@worldsibu/convector-core-controller"
 var convector_rest_api_decorators_1 = require("@worldsibu/convector-rest-api-decorators");
 var task_model_1 = require("./task.model");
 var participant_cc_1 = require("participant-cc");
+var util_1 = require("util");
 var TaskController = (function (_super) {
     tslib_1.__extends(TaskController, _super);
     function TaskController() {
@@ -58,7 +59,7 @@ var TaskController = (function (_super) {
             });
         });
     };
-    TaskController.prototype.modify = function (id, title, description, prereq) {
+    TaskController.prototype.modify = function (id, title, description, priority, due, prereq, attachements) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
             return tslib_1.__generator(this, function (_a) {
@@ -88,6 +89,10 @@ var TaskController = (function (_super) {
                         if (_a.sent()) {
                             task.prerequisites = prereq;
                         }
+                        task.priority = priority;
+                        task.due = due;
+                        task.attachments = attachements;
+                        util_1.print(attachements);
                         return [4, task.save()];
                     case 4:
                         _a.sent();
@@ -356,7 +361,10 @@ var TaskController = (function (_super) {
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string())),
         tslib_1.__param(1, convector_core_controller_1.Param(yup.string().trim())),
         tslib_1.__param(2, convector_core_controller_1.Param(yup.string().trim())),
-        tslib_1.__param(3, convector_core_controller_1.Param(yup.array()))
+        tslib_1.__param(3, convector_core_controller_1.Param(yup.number())),
+        tslib_1.__param(4, convector_core_controller_1.Param(yup.string().matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/, { excludeEmptyString: true }))),
+        tslib_1.__param(5, convector_core_controller_1.Param(yup.array())),
+        tslib_1.__param(6, convector_core_controller_1.Param(yup.array().of(yup.string())))
     ], TaskController.prototype, "modify", null);
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),

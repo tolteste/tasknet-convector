@@ -73,7 +73,7 @@ describe('Task', () => {
   });
 
   it('should modify a task with trimmed title and description', async () => {
-    await taskManagerCtrl.modify(idCreatedTask, "Foo title   ", "  Foo description", []);
+    await taskManagerCtrl.modify(idCreatedTask, "Foo title   ", "  Foo description", Priority.HIGH, date, [], []);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask);
     expect(retrivedTask.title).to.equal("Foo title");
     expect(retrivedTask.description).to.equal("Foo description");
@@ -82,14 +82,14 @@ describe('Task', () => {
 
   it('should create a task with prerequisite', async () => {
     idCreatedTask2 = uuid();
-    await taskManagerCtrl.create(idCreatedTask2, 'Test title 2', 'Test description 2', Priority.HIGH,date, 'Participant1', [idCreatedTask], ["efwfew"]);
+    await taskManagerCtrl.create(idCreatedTask2, 'Test title 2', 'Test description 2', Priority.HIGH, date, 'Participant1', [idCreatedTask], ["efwfew"]);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask2);
     expect(retrivedTask.id).to.exist;
     expect(retrivedTask.prerequisites).to.contain(idCreatedTask);
   });
 
   it('should modify a task with prerequisite', async () => {
-    await taskManagerCtrl.modify(idCreatedTask, "", "", [idCreatedTask2]);
+    await taskManagerCtrl.modify(idCreatedTask, "", "", Priority.LOW, date, [idCreatedTask2], ['wkofkwokf']);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask);
     expect(retrivedTask.title).to.equal("Foo title");
     expect(retrivedTask.description).to.equal("Foo description");
@@ -97,14 +97,14 @@ describe('Task', () => {
   });
 
   it('should throw an error when assigning itself as prerequisite', async () => {
-    await chai.expect(taskManagerCtrl.modify(idCreatedTask, "", "", [idCreatedTask]))
+    await chai.expect(taskManagerCtrl.modify(idCreatedTask, "", "", Priority.MEDIUM, date, [idCreatedTask], []))
       .to.eventually.be.rejectedWith('Task can\'t have itself as prerequisite');
   });
 
   it('should throw an error when user that did not created the task wants to make a modification', async () => {
     (adapter.stub as any).usercert = p2Identity;
     await participantCtrl.register('Participant2');
-    await chai.expect(taskManagerCtrl.modify(idCreatedTask, "Test", "", []))
+    await chai.expect(taskManagerCtrl.modify(idCreatedTask, "Test", "", Priority.LOW, date, [], []))
       .to.eventually.be.rejectedWith('Only owner of the task is able to make modifications.');
   });
 
