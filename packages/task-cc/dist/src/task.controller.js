@@ -11,15 +11,15 @@ var TaskController = (function (_super) {
     function TaskController() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    TaskController.prototype.create = function (id, title, description, creatorId, prereq) {
+    TaskController.prototype.create = function (id, title, description, priority, due, ownerId, prereq, attachements) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var exists, task;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, !this.participantIsCaller(creatorId)];
+                    case 0: return [4, !this.participantIsCaller(ownerId)];
                     case 1:
                         if (_a.sent()) {
-                            throw new Error("Participant with creatorId: " + creatorId + " does not have identity of a current caller.");
+                            throw new Error("Participant with ownerId: " + ownerId + " does not have identity of a current caller.");
                         }
                         return [4, task_model_1.Task.getOne(id)];
                     case 2:
@@ -36,12 +36,20 @@ var TaskController = (function (_super) {
                         if (_a.sent()) {
                             task.prerequisites = prereq;
                         }
+                        if (typeof attachements === 'undefined') {
+                            task.attachments = [];
+                        }
+                        else {
+                            task.attachments = attachements;
+                        }
                         task.title = title;
                         task.description = description;
                         task.state = task_model_1.TaskState.MODIFIABLE;
+                        task.priority = priority;
+                        task.due = due;
                         task.created = Date.now();
                         task.assignee = undefined;
-                        task.creator = creatorId;
+                        task.owner = ownerId;
                         return [4, task.save()];
                     case 4:
                         _a.sent();
@@ -58,10 +66,10 @@ var TaskController = (function (_super) {
                     case 0: return [4, this.getTask(id)];
                     case 1:
                         task = _a.sent();
-                        return [4, this.participantIsCaller(task.creator)];
+                        return [4, this.participantIsCaller(task.owner)];
                     case 2:
                         if ((_a.sent()) !== true) {
-                            throw new Error('Only creator of the task is able to make modifications.');
+                            throw new Error('Only owner of the task is able to make modifications.');
                         }
                         if (task.state !== task_model_1.TaskState.MODIFIABLE) {
                             throw new Error("Can't modify a task that is not in MODIFIABLE state.");
@@ -100,7 +108,7 @@ var TaskController = (function (_super) {
                     case 2:
                         _a = (_b.sent()) !== true;
                         if (!_a) return [3, 4];
-                        return [4, this.participantIsCaller(task.creator)];
+                        return [4, this.participantIsCaller(task.owner)];
                     case 3:
                         _a = (_b.sent()) !== true;
                         _b.label = 4;
@@ -154,10 +162,10 @@ var TaskController = (function (_super) {
                     case 0: return [4, this.getTask(taskId)];
                     case 1:
                         task = _a.sent();
-                        return [4, this.participantIsCaller(task.creator)];
+                        return [4, this.participantIsCaller(task.owner)];
                     case 2:
                         if ((_a.sent()) !== true) {
-                            throw new Error("Only creator can review a task.");
+                            throw new Error("Only owner can review a task.");
                         }
                         if (task.state !== task_model_1.TaskState.IN_REVISION) {
                             throw new Error("Can't end revison of a task. Task is not IN_REVISION state.");
@@ -183,13 +191,13 @@ var TaskController = (function (_super) {
                     case 2:
                         _a = (_b.sent()) !== true;
                         if (!_a) return [3, 4];
-                        return [4, this.participantIsCaller(task.creator)];
+                        return [4, this.participantIsCaller(task.owner)];
                     case 3:
                         _a = (_b.sent()) !== true;
                         _b.label = 4;
                     case 4:
                         if (_a) {
-                            throw new Error("Only assignee or creator can revoke a task.");
+                            throw new Error("Only assignee or owner can revoke a task.");
                         }
                         if (task.state !== task_model_1.TaskState.IN_PROGRESS) {
                             throw new Error("Can't revoke a task. Task is not IN_PROGRESS state.");
@@ -212,10 +220,10 @@ var TaskController = (function (_super) {
                     case 0: return [4, this.getTask(taskId)];
                     case 1:
                         task = _a.sent();
-                        return [4, this.participantIsCaller(task.creator)];
+                        return [4, this.participantIsCaller(task.owner)];
                     case 2:
                         if ((_a.sent()) !== true) {
-                            throw new Error("Only creator can demand a rework of a task.");
+                            throw new Error("Only owner can demand a rework of a task.");
                         }
                         if (task.state !== task_model_1.TaskState.IN_REVISION) {
                             throw new Error("Can't demand rework of a task. Task is not IN_REVISION state.");
@@ -237,10 +245,10 @@ var TaskController = (function (_super) {
                     case 0: return [4, this.getTask(taskId)];
                     case 1:
                         task = _a.sent();
-                        return [4, this.participantIsCaller(task.creator)];
+                        return [4, this.participantIsCaller(task.owner)];
                     case 2:
                         if ((_a.sent()) !== true) {
-                            throw new Error("Only creator can delete a task.");
+                            throw new Error("Only owner can delete a task.");
                         }
                         if (task.state !== task_model_1.TaskState.MODIFIABLE) {
                             throw new Error("Can't delete a task that is not MODIFIABLE.");
@@ -336,8 +344,11 @@ var TaskController = (function (_super) {
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string().required())),
         tslib_1.__param(1, convector_core_controller_1.Param(yup.string().required().trim())),
         tslib_1.__param(2, convector_core_controller_1.Param(yup.string().required().trim())),
-        tslib_1.__param(3, convector_core_controller_1.Param(yup.string())),
-        tslib_1.__param(4, convector_core_controller_1.Param(yup.array().of(yup.string())))
+        tslib_1.__param(3, convector_core_controller_1.Param(yup.number())),
+        tslib_1.__param(4, convector_core_controller_1.Param(yup.string().matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/, { excludeEmptyString: true }))),
+        tslib_1.__param(5, convector_core_controller_1.Param(yup.string())),
+        tslib_1.__param(6, convector_core_controller_1.Param(yup.array().of(yup.string()))),
+        tslib_1.__param(7, convector_core_controller_1.Param(yup.array().of(yup.string())))
     ], TaskController.prototype, "create", null);
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),

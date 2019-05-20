@@ -11,6 +11,12 @@ var TaskState;
     TaskState[TaskState["COMPLETED"] = 3] = "COMPLETED";
     TaskState[TaskState["CANCELED"] = 4] = "CANCELED";
 })(TaskState = exports.TaskState || (exports.TaskState = {}));
+var Priority;
+(function (Priority) {
+    Priority[Priority["HIGH"] = 0] = "HIGH";
+    Priority[Priority["MEDIUM"] = 1] = "MEDIUM";
+    Priority[Priority["LOW"] = 2] = "LOW";
+})(Priority = exports.Priority || (exports.Priority = {}));
 var Task = (function (_super) {
     tslib_1.__extends(Task, _super);
     function Task() {
@@ -43,13 +49,23 @@ var Task = (function (_super) {
         convector_core_model_1.ReadOnly(),
         convector_core_model_1.Required(),
         convector_core_model_1.Validate(yup.string())
-    ], Task.prototype, "creator", void 0);
+    ], Task.prototype, "owner", void 0);
     tslib_1.__decorate([
         convector_core_model_1.Validate(yup.string())
     ], Task.prototype, "assignee", void 0);
     tslib_1.__decorate([
         convector_core_model_1.Validate(yup.array().of(yup.string()))
     ], Task.prototype, "prerequisites", void 0);
+    tslib_1.__decorate([
+        convector_core_model_1.Required(),
+        convector_core_model_1.Validate(yup.string().matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/, { excludeEmptyString: true }))
+    ], Task.prototype, "due", void 0);
+    tslib_1.__decorate([
+        convector_core_model_1.Validate(yup.array().of(yup.string()))
+    ], Task.prototype, "attachments", void 0);
+    tslib_1.__decorate([
+        convector_core_model_1.Validate(yup.number())
+    ], Task.prototype, "priority", void 0);
     return Task;
 }(convector_core_model_1.ConvectorModel));
 exports.Task = Task;

@@ -62,10 +62,13 @@ export class Controller {
   async task_create(req: Request, res: Response) {
     try {
       let cntrl = await TaskControllerClient.init();
-      let modelRaw = req.body;
-      let model = new Models.Task(modelRaw);
-      let result = await cntrl.create(model);
-      res.json(result);
+      let params = req.body;
+      
+      let returnObject = await cntrl.create(params.id,params.title,params.description,params.creatorId,params.prereq);
+      if (returnObject === undefined) {
+        return res.status(404);
+      }
+      res.json(returnObject);
     } catch (ex) {
       console.log(ex.message, ex.stack);
       res.status(500).send(ex.stack);

@@ -6,12 +6,13 @@ import { expect } from 'chai';
 import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
 import 'mocha';
 import * as chaiAsPromised from 'chai-as-promised';
-import { Task, TaskState } from '../src/task.model';
+import { Task, TaskState, Priority } from '../src/task.model';
 import { ClientFactory } from '@worldsibu/convector-core';
 import { ParticipantController } from '../../participant-cc/src';
 import { TaskController } from '../src';
 import { Participant } from '../../participant-cc/src';
 import { print, isNull } from 'util';
+import { privateDecrypt } from 'crypto';
 
 
 describe('Task', () => {
@@ -39,7 +40,7 @@ describe('Task', () => {
     'CCqGSM49BAMCA0gAMEUCIQCNsmDjOXF/NvciSZebfk2hfSr/v5CqRD7pIHCq3lIR' +
     'lwIgPC/qGM1yeVinfN0z7M68l8rWn4M4CVR2DtKMpk3G9k9=' +
     '-----END CERTIFICATE-----';
-
+  let date = new Date('December 17, 2020 03:24:00');
   before(async () => {
     adapter = new MockControllerAdapter();
     await adapter.init([
@@ -63,7 +64,7 @@ describe('Task', () => {
 
   it('should create a task', async () => {
     idCreatedTask = uuid();
-    await taskManagerCtrl.create(idCreatedTask, 'Test title   ', 'Test description   ', 'Participant1', []);
+    await taskManagerCtrl.create(idCreatedTask, 'Test title   ', 'Test description   ', Priority.MEDIUM, date, 'Participant1', [], []);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask);
     expect(retrivedTask.id).to.exist;
     expect(retrivedTask.title).to.equal("Test title");
@@ -81,7 +82,7 @@ describe('Task', () => {
 
   it('should create a task with prerequisite', async () => {
     idCreatedTask2 = uuid();
-    await taskManagerCtrl.create(idCreatedTask2, 'Test title 2', 'Test description 2', 'Participant1', [idCreatedTask]);
+    await taskManagerCtrl.create(idCreatedTask2, 'Test title 2', 'Test description 2', Priority.HIGH,date, 'Participant1', [idCreatedTask], ["efwfew"]);
     const retrivedTask = await adapter.getById<Task>(idCreatedTask2);
     expect(retrivedTask.id).to.exist;
     expect(retrivedTask.prerequisites).to.contain(idCreatedTask);
@@ -104,20 +105,20 @@ describe('Task', () => {
     (adapter.stub as any).usercert = p2Identity;
     await participantCtrl.register('Participant2');
     await chai.expect(taskManagerCtrl.modify(idCreatedTask, "Test", "", []))
-      .to.eventually.be.rejectedWith('Only creator of the task is able to make modifications.');
+      .to.eventually.be.rejectedWith('Only owner of the task is able to make modifications.');
   });
 
   it('should assign a participant as an assignee to a task', async () => {
     idCreatedTask3 = uuid();
-    await taskManagerCtrl.create(idCreatedTask3, "Test", "Description", "Participant2", []);
+    await taskManagerCtrl.create(idCreatedTask3, "Test", "Description", Priority.LOW, date, "Participant2", [], []);
     await taskManagerCtrl.assign(idCreatedTask3, 'Participant1');
     let retrivedTask = await adapter.getById<Task>(idCreatedTask3);
     chai.expect(retrivedTask.assignee).to.equal('Participant1');
-    chai.expect(retrivedTask.creator).to.equal('Participant2');
+    chai.expect(retrivedTask.owner).to.equal('Participant2');
     chai.expect(retrivedTask.state).to.equal(TaskState.IN_PROGRESS);
   });
 
-  it('should throw an error when caller is not creator and trying to assign different participant', async () => {
+  it('should throw an error when caller is not owner and trying to assign different participant', async () => {
     await chai.expect(taskManagerCtrl.assign(idCreatedTask2, 'Participant1')).to.eventually.be.rejectedWith('Task can\'t be assigned to this participant.');
   });
 
@@ -125,7 +126,7 @@ describe('Task', () => {
     await taskManagerCtrl.assign(idCreatedTask, 'Participant2');
     let retrivedTask = await adapter.getById<Task>(idCreatedTask);
     chai.expect(retrivedTask.assignee).to.equal('Participant2');
-    chai.expect(retrivedTask.creator).to.equal('Participant1');
+    chai.expect(retrivedTask.owner).to.equal('Participant1');
     chai.expect(retrivedTask.state).to.equal(TaskState.IN_PROGRESS);
   });
 
@@ -147,7 +148,7 @@ describe('Task', () => {
   });
 
   it('should throw an error when caller is assignee of a task that is being passed to a revision', async () => {
-    await chai.expect(taskManagerCtrl.approve(idCreatedTask3)).to.eventually.be.rejectedWith(`Only creator can review a task.`);
+    await chai.expect(taskManagerCtrl.approve(idCreatedTask3)).to.eventually.be.rejectedWith(`Only owner can review a task.`);
   });
 
   it('should send a task for a rework', async () => {

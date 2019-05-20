@@ -12,7 +12,7 @@ import {
   Create,
   Service
 } from '@worldsibu/convector-rest-api-decorators';
-import { Task, TaskState } from './task.model';
+import { Task, TaskState, Priority } from './task.model';
 import { Participant } from 'participant-cc';
 import { stringify } from 'querystring';
 import { print } from 'util';
@@ -23,9 +23,11 @@ export class TaskController extends ConvectorController {
    * @param id Identifier string of created task
    * @param title Shortly describes a specified task
    * @param description Provides more detailed description of a task
-   * @param creatorId Participant.id that will be set as creator
+   * @param priority Sets an priority of a task
+   * @param due deadline for completion
+   * @param ownerId Participant.id that will be set as owner
    * @param prereq Array<string> with ids of all prerequisite tasks
-   * @returns id of created task
+   * @param attachements Array<string> with hashes of attachements
    * */
   @Service()
   @Invokable()
@@ -36,13 +38,20 @@ export class TaskController extends ConvectorController {
     title: string,
     @Param(yup.string().required().trim())
     description: string,
+    @Param(yup.number())
+    priority: Priority,
+    //validation through regexp since yup does not support date validation for Date objects
+    @Param(yup.string().matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/, { excludeEmptyString: true }))
+    due: Date,
     @Param(yup.string())
-    creatorId: string,
+    ownerId: string,
     @Param(yup.array().of(yup.string()))
-    prereq: string[]
+    prereq: string[],
+    @Param(yup.array().of(yup.string()))
+    attachements: string[]
   ) {
-    if (await !this.participantIsCaller(creatorId)) {
-      throw new Error(`Participant with creatorId: ${creatorId} does not have identity of a current caller.`)
+    if (await !this.participantIsCaller(ownerId)) {
+      throw new Error(`Participant with ownerId: ${ownerId} does not have identity of a current caller.`)
     }
     // Checking for colisions
     var exists = await Task.getOne(id)
@@ -59,12 +68,19 @@ export class TaskController extends ConvectorController {
     if (await this.arePrerequisitesValid) {
       task.prerequisites = prereq;
     }
+    if (typeof attachements === 'undefined') {
+      task.attachments = [];
+    } else {
+      task.attachments = attachements;
+    }
     task.title = title;
     task.description = description;
     task.state = TaskState.MODIFIABLE;
+    task.priority = priority;
+    task.due = due;
     task.created = Date.now();
     task.assignee = undefined;
-    task.creator = creatorId;
+    task.owner = ownerId;
     await task.save();
   }
 
@@ -82,8 +98,8 @@ export class TaskController extends ConvectorController {
   ) {
     const task = await this.getTask(id);
 
-    if (await this.participantIsCaller(task.creator) !== true) {
-      throw new Error('Only creator of the task is able to make modifications.');
+    if (await this.participantIsCaller(task.owner) !== true) {
+      throw new Error('Only owner of the task is able to make modifications.');
     }
 
     if (task.state !== TaskState.MODIFIABLE) {
@@ -116,9 +132,9 @@ export class TaskController extends ConvectorController {
     const task = await this.getTask(taskId);
 
     /* Task is assigned when caller of a function is an assignee
-    * or task creator calls function and assigns a specific participant */
+    * or task owner calls function and assigns a specific participant */
     if (await this.participantIsCaller(assigneeId) !== true &&
-      await this.participantIsCaller(task.creator) !== true) {
+      await this.participantIsCaller(task.owner) !== true) {
       throw new Error(`Task can't be assigned to this participant.`)
     }
 
@@ -155,8 +171,8 @@ export class TaskController extends ConvectorController {
     taskId: string
   ) {
     const task = await this.getTask(taskId);
-    if (await this.participantIsCaller(task.creator) !== true) {
-      throw new Error(`Only creator can review a task.`);
+    if (await this.participantIsCaller(task.owner) !== true) {
+      throw new Error(`Only owner can review a task.`);
     }
     if (task.state !== TaskState.IN_REVISION) {
       throw new Error(`Can't end revison of a task. Task is not IN_REVISION state.`);
@@ -173,8 +189,8 @@ export class TaskController extends ConvectorController {
   ) {
     const task = await this.getTask(taskId);
     if (await this.participantIsCaller(task.assignee) !== true &&
-      await this.participantIsCaller(task.creator) !== true) {
-      throw new Error(`Only assignee or creator can revoke a task.`);
+      await this.participantIsCaller(task.owner) !== true) {
+      throw new Error(`Only assignee or owner can revoke a task.`);
     }
     if (task.state !== TaskState.IN_PROGRESS) {
       throw new Error(`Can't revoke a task. Task is not IN_PROGRESS state.`);
@@ -191,8 +207,8 @@ export class TaskController extends ConvectorController {
     taskId: string
   ) {
     const task = await this.getTask(taskId);
-    if (await this.participantIsCaller(task.creator) !== true) {
-      throw new Error(`Only creator can demand a rework of a task.`);
+    if (await this.participantIsCaller(task.owner) !== true) {
+      throw new Error(`Only owner can demand a rework of a task.`);
     }
     if (task.state !== TaskState.IN_REVISION) {
       throw new Error(`Can't demand rework of a task. Task is not IN_REVISION state.`);
@@ -208,8 +224,8 @@ export class TaskController extends ConvectorController {
     taskId: string
   ) {
     const task = await this.getTask(taskId);
-    if (await this.participantIsCaller(task.creator) !== true) {
-      throw new Error(`Only creator can delete a task.`);
+    if (await this.participantIsCaller(task.owner) !== true) {
+      throw new Error(`Only owner can delete a task.`);
     }
     if (task.state !== TaskState.MODIFIABLE) {
       throw new Error(`Can't delete a task that is not MODIFIABLE.`)

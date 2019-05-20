@@ -6,13 +6,21 @@ export declare enum TaskState {
     COMPLETED = 3,
     CANCELED = 4
 }
+export declare enum Priority {
+    HIGH = 0,
+    MEDIUM = 1,
+    LOW = 2
+}
 export declare class Task extends ConvectorModel<Task> {
     readonly type = "edu.taskmanager.task";
     title: string;
     description: string;
     state: TaskState;
     created: number;
-    creator: string;
+    owner: string;
     assignee: string;
     prerequisites: string[];
+    due: Date;
+    attachments: string[];
+    priority: Priority;
 }

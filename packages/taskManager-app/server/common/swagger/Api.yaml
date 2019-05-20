@@ -122,6 +122,34 @@ fingerprint: a_text} ]
            type: string
            example: a_text
 
+    task_createBody:
+       type: object
+       title: task_createParams
+       required:
+          - id
+          - title
+          - description
+          - creatorId
+          - prereq
+       properties:
+         id:
+           type: string
+           example: a_text
+         title:
+           type: string
+           example: a_text
+         description:
+           type: string
+           example: a_text
+         creatorId:
+           type: string
+           example: a_text
+         prereq:
+           type: array
+           items:
+            type: string
+           example: [a_text, a_text]
+
     task_modifyBody:
        type: object
        title: task_modifyParams
@@ -267,22 +295,6 @@ paths:
           description: changeIdentity raised an exception
 
 
-  /task/tasks: 
-    post:
-      tags:
-        - Tasks
-      description: Create a new task
-      parameters:
-        - name: task
-          in: body
-          description: a task
-          required: true
-          schema:
-            $ref: "#/definitions/task_TaskBody"
-      responses:
-        200:
-          description: Successful insertion of tasks 
-
 
   /task/tasks/{id}:
     get:
@@ -299,6 +311,24 @@ paths:
           description: Return the task with the specified id
         404:
           description: Task not found 
+
+
+  /task/create:
+    post:
+      tags:
+        - create
+      description: create
+      parameters:
+        - name: task_createParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/task_createBody"
+      responses:
+        200:
+          description: create executed correctly
+        500:
+          description: create raised an exception
 
 
   /task/modify:
