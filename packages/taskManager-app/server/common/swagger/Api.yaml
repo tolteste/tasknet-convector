@@ -157,7 +157,7 @@ fingerprint: a_text} ]
           - due
           - ownerId
           - prereq
-          - attachements
+          - attachments
        properties:
          id:
            type: string
@@ -172,8 +172,8 @@ fingerprint: a_text} ]
            type: Priority
            example: {}
          due:
-           type: Date
-           example: {}
+           type: string
+           example: a_text
          ownerId:
            type: string
            example: a_text
@@ -182,7 +182,7 @@ fingerprint: a_text} ]
            items:
             type: string
            example: [a_text, a_text]
-         attachements:
+         attachments:
            type: array
            items:
             type: string
@@ -213,8 +213,8 @@ fingerprint: a_text} ]
            type: Priority
            example: {}
          due:
-           type: Date
-           example: {}
+           type: string
+           example: a_text
          prereq:
            type: array
            items:
@@ -377,6 +377,38 @@ paths:
           description: changeIdentity raised an exception
 
 
+
+  /task/tasks/assigned/{id}:
+    get:
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the participant that has tasks assigned
+          type: string
+      responses:
+        200:
+          description: Return the tasks that have participant with provided id as an assignee
+        404:
+          description: Tasks not found 
+
+  /task/tasks/owned/{id}:
+    get:
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the participant that owns the tasks
+          type: string
+      responses:
+        200:
+          description: Return the tasks that are owned by provided participant
+        404:
+          description: Task not found 
 
   /task/tasks/{id}:
     get:

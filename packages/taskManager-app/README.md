@@ -1,6 +1,6 @@
 # taskManager-app
 
-My cool TypeScript app
+Task manager app invoking chaincode methods.
 
 ## Quick Start
 

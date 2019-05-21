@@ -40,7 +40,7 @@ describe('Task', () => {
     'CCqGSM49BAMCA0gAMEUCIQCNsmDjOXF/NvciSZebfk2hfSr/v5CqRD7pIHCq3lIR' +
     'lwIgPC/qGM1yeVinfN0z7M68l8rWn4M4CVR2DtKMpk3G9k9=' +
     '-----END CERTIFICATE-----';
-  let date = new Date('December 17, 2020 03:24:00');
+  let date = new Date('December 17, 2020 03:24:00').toISOString();
   before(async () => {
     adapter = new MockControllerAdapter();
     await adapter.init([
@@ -168,7 +168,7 @@ describe('Task', () => {
 
   it('should retrive tasks assigned to Participant1', async () => {
     (adapter.stub as any).usercert = p1Identity;
-    let tasks = await taskManagerCtrl.getParticipantsTasks('Participant1');
+    let tasks = await taskManagerCtrl.getAssignedTo('Participant1');
     chai.expect(tasks).to.have.length(1);
   });
 
@@ -179,7 +179,7 @@ describe('Task', () => {
     chai.expect(retrivedTask.state).to.equal(TaskState.MODIFIABLE);
     chai.expect(retrivedTask.assignee).to.equal(undefined);
     (adapter.stub as any).usercert = p1Identity;
-    let tasks = await taskManagerCtrl.getParticipantsTasks('Participant1');
+    let tasks = await taskManagerCtrl.getAssignedTo('Participant1');
     chai.expect(tasks).to.have.length(0);
   });
 

@@ -57,7 +57,7 @@ var Task = (function (_super) {
     ], Task.prototype, "prerequisites", void 0);
     tslib_1.__decorate([
         convector_core_model_1.Required(),
-        convector_core_model_1.Validate(yup.string().matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/, { excludeEmptyString: true }))
+        convector_core_model_1.Validate(yup.date())
     ], Task.prototype, "due", void 0);
     tslib_1.__decorate([
         convector_core_model_1.Validate(yup.array().of(yup.string()))

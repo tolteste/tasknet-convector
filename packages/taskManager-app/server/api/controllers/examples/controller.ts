@@ -50,9 +50,27 @@ export class Controller {
 
 
 
-  async task_getParticipantsTasks(req: Request, res: Response) {
+  async task_get(req: Request, res: Response) {
     let cntrl = await TaskControllerClient.init();
-    let result = await cntrl.getParticipantsTasks(req.params.id);
+    let result = await cntrl.get(req.params.id);
+    if (!result) {
+      return res.status(404);
+    }
+    res.json(result);
+  }
+
+  async task_getOwned(req: Request, res: Response) {
+    let cntrl = await TaskControllerClient.init();
+    let result = await cntrl.getOwned(req.params.id);
+    if (!result) {
+      return res.status(404);
+    }
+    res.json(result);
+  }
+
+  async task_getAssignedTo(req: Request, res: Response) {
+    let cntrl = await TaskControllerClient.init();
+    let result = await cntrl.getAssignedTo(req.params.id);
     if (!result) {
       return res.status(404);
     }
@@ -64,7 +82,7 @@ export class Controller {
       let cntrl = await TaskControllerClient.init();
       let params = req.body;
       
-      let returnObject = await cntrl.create(params.id,params.title,params.description,params.priority,params.due,params.ownerId,params.prereq,params.attachements);
+      let returnObject = await cntrl.create(params.id,params.title,params.description,params.priority,params.due,params.ownerId,params.prereq,params.attachments);
       if (returnObject === undefined) {
         return res.status(404);
       }

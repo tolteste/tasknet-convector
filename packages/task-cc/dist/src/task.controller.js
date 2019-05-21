@@ -12,7 +12,7 @@ var TaskController = (function (_super) {
     function TaskController() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    TaskController.prototype.create = function (id, title, description, priority, due, ownerId, prereq, attachements) {
+    TaskController.prototype.create = function (id, title, description, priority, due, ownerId, prereq, attachments) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var exists, task;
             return tslib_1.__generator(this, function (_a) {
@@ -37,17 +37,17 @@ var TaskController = (function (_super) {
                         if (_a.sent()) {
                             task.prerequisites = prereq;
                         }
-                        if (typeof attachements === 'undefined') {
+                        if (typeof attachments === 'undefined') {
                             task.attachments = [];
                         }
                         else {
-                            task.attachments = attachements;
+                            task.attachments = attachments;
                         }
                         task.title = title;
                         task.description = description;
                         task.state = task_model_1.TaskState.MODIFIABLE;
                         task.priority = priority;
-                        task.due = due;
+                        task.due = new Date(due);
                         task.created = Date.now();
                         task.assignee = undefined;
                         task.owner = ownerId;
@@ -91,7 +91,7 @@ var TaskController = (function (_super) {
                             task.prerequisites = prereq;
                         }
                         task.priority = priority;
-                        task.due = due;
+                        task.due = new Date(due);
                         task.attachments = attachements;
                         return [4, task.save()];
                     case 4:
@@ -375,26 +375,6 @@ var TaskController = (function (_super) {
             });
         });
     };
-    TaskController.prototype.getParticipantsTasks = function (participant) {
-        return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var tasks;
-            return tslib_1.__generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4, this.participantIsCaller(participant)];
-                    case 1:
-                        if ((_a.sent()) !== true) {
-                            throw new Error("Caller has to be the assignee that was passed as a parameter.");
-                        }
-                        return [4, task_model_1.Task.getAll()];
-                    case 2:
-                        tasks = _a.sent();
-                        tasks = tasks.filter(function (task) { return (task.assignee === participant) ||
-                            task.owner === participant; });
-                        return [2, tasks];
-                }
-            });
-        });
-    };
     TaskController.prototype.getTask = function (id) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
@@ -463,7 +443,7 @@ var TaskController = (function (_super) {
         tslib_1.__param(1, convector_core_controller_1.Param(yup.string().required().trim())),
         tslib_1.__param(2, convector_core_controller_1.Param(yup.string().required().trim())),
         tslib_1.__param(3, convector_core_controller_1.Param(yup.number())),
-        tslib_1.__param(4, convector_core_controller_1.Param(yup.string().matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/, { excludeEmptyString: true }))),
+        tslib_1.__param(4, convector_core_controller_1.Param(yup.date())),
         tslib_1.__param(5, convector_core_controller_1.Param(yup.string())),
         tslib_1.__param(6, convector_core_controller_1.Param(yup.array().of(yup.string()))),
         tslib_1.__param(7, convector_core_controller_1.Param(yup.array().of(yup.string())))
@@ -475,7 +455,7 @@ var TaskController = (function (_super) {
         tslib_1.__param(1, convector_core_controller_1.Param(yup.string().trim())),
         tslib_1.__param(2, convector_core_controller_1.Param(yup.string().trim())),
         tslib_1.__param(3, convector_core_controller_1.Param(yup.number())),
-        tslib_1.__param(4, convector_core_controller_1.Param(yup.string().matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/, { excludeEmptyString: true }))),
+        tslib_1.__param(4, convector_core_controller_1.Param(yup.date())),
         tslib_1.__param(5, convector_core_controller_1.Param(yup.array())),
         tslib_1.__param(6, convector_core_controller_1.Param(yup.array().of(yup.string())))
     ], TaskController.prototype, "modify", null);
@@ -523,22 +503,20 @@ var TaskController = (function (_super) {
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskController.prototype, "delete", null);
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.GetById('Task'),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskController.prototype, "get", null);
     tslib_1.__decorate([
+        convector_rest_api_decorators_1.GetById('Task'),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskController.prototype, "getOwned", null);
     tslib_1.__decorate([
-        convector_core_controller_1.Invokable(),
-        tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
-    ], TaskController.prototype, "getAssignedTo", null);
-    tslib_1.__decorate([
         convector_rest_api_decorators_1.GetById('Task'),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
-    ], TaskController.prototype, "getParticipantsTasks", null);
+    ], TaskController.prototype, "getAssignedTo", null);
     TaskController = tslib_1.__decorate([
         convector_core_controller_1.Controller('Task')
     ], TaskController);

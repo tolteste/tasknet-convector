@@ -40,15 +40,14 @@ export class TaskController extends ConvectorController {
     description: string,
     @Param(yup.number())
     priority: Priority,
-    //validation through regexp since yup does not support date validation for Date objects
-    @Param(yup.string().matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/, { excludeEmptyString: true }))
-    due: Date,
+    @Param(yup.date())
+    due: string,
     @Param(yup.string())
     ownerId: string,
     @Param(yup.array().of(yup.string()))
     prereq: string[],
     @Param(yup.array().of(yup.string()))
-    attachements: string[]
+    attachments: string[]
   ) {
     if (await !this.participantIsCaller(ownerId)) {
       throw new Error(`Participant with ownerId: ${ownerId} does not have identity of a current caller.`)
@@ -68,16 +67,16 @@ export class TaskController extends ConvectorController {
     if (await this.arePrerequisitesValid) {
       task.prerequisites = prereq;
     }
-    if (typeof attachements === 'undefined') {
+    if (typeof attachments === 'undefined') {
       task.attachments = [];
     } else {
-      task.attachments = attachements;
+      task.attachments = attachments;
     }
     task.title = title;
     task.description = description;
     task.state = TaskState.MODIFIABLE;
     task.priority = priority;
-    task.due = due;
+    task.due = new Date(due);
     task.created = Date.now();
     task.assignee = undefined;
     task.owner = ownerId;
@@ -96,8 +95,8 @@ export class TaskController extends ConvectorController {
     @Param(yup.number())
     priority: Priority,
     //validation through regexp since yup does not support date validation for Date objects
-    @Param(yup.string().matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/, { excludeEmptyString: true }))
-    due: Date,
+    @Param(yup.date())
+    due: string,
     @Param(yup.array())
     prereq: string[],
     @Param(yup.array().of(yup.string()))
@@ -127,7 +126,7 @@ export class TaskController extends ConvectorController {
       task.prerequisites = prereq;
     }
     task.priority = priority;
-    task.due = due;
+    task.due = new Date(due);
     task.attachments = attachements;
     await task.save();
   }
@@ -300,7 +299,7 @@ export class TaskController extends ConvectorController {
     return existing;
   }
 
-  //@GetById('Task')
+  @GetById('Task')
   @Invokable()
   public async getOwned(
     @Param(yup.string())
@@ -316,7 +315,7 @@ export class TaskController extends ConvectorController {
     return tasks;
   }
 
-  //@GetById('Task')
+  @GetById('Task')
   @Invokable()
   public async getAssignedTo(
     @Param(yup.string())
@@ -331,23 +330,6 @@ export class TaskController extends ConvectorController {
     tasks = tasks.filter(task => task.assignee === assignee)
     return tasks;
   }
-
-   @GetById('Task')
-   @Invokable()
-   public async getParticipantsTasks(
-     @Param(yup.string())
-     participant : string
-   ) {
-     // parameter has to correspond with the caller
-     if(await this.participantIsCaller(participant) !== true){
-       throw new Error(`Caller has to be the assignee that was passed as a parameter.`)
-     }
-     var tasks = await Task.getAll();
-     // filtering for tasks owned by the supplied participant
-     tasks = tasks.filter(task => (task.assignee === participant) || 
-     task.owner === participant)
-     return tasks;
-   }
  
   //========================================================================
   //=======================SUPPORT FUNCTIONS================================

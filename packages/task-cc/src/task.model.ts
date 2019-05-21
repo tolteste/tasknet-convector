@@ -54,7 +54,7 @@ export class Task extends ConvectorModel<Task> {
   public prerequisites: string[];
 
   @Required()
-  @Validate(yup.string().matches(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/, { excludeEmptyString: true }))
+  @Validate(yup.date())
   public due: Date;
 
   @Validate(yup.array().of(yup.string()))
