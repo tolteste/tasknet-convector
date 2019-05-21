@@ -130,6 +130,13 @@ describe('Task', () => {
     chai.expect(retrivedTask.state).to.equal(TaskState.IN_PROGRESS);
   });
 
+  it('should save deliverables references to the ledger', async () => {
+    await taskManagerCtrl.saveDeliverables(idCreatedTask, ['file1', 'file2']);
+    let retrivedTask = await adapter.getById<Task>(idCreatedTask);
+    chai.expect(retrivedTask.deliverables).to.contain('file1');
+    chai.expect(retrivedTask.deliverables).to.contain('file2');
+  });
+
   it('should pass a task to a review', async () => {
     await taskManagerCtrl.passToReview(idCreatedTask);
     let retrivedTask = await adapter.getById<Task>(idCreatedTask);
@@ -159,16 +166,41 @@ describe('Task', () => {
     chai.expect(retrivedTask.state).to.equal(TaskState.IN_PROGRESS);
   });
 
-  it('should revoke a task from asignee', async () => {
+  it('should retrive tasks assigned to Participant1', async () => {
+    (adapter.stub as any).usercert = p1Identity;
+    let tasks = await taskManagerCtrl.getParticipantsTasks('Participant1');
+    chai.expect(tasks).to.have.length(1);
+  });
+
+  it('should revoke a task from assignee', async () => {
+    (adapter.stub as any).usercert = p2Identity;
     await taskManagerCtrl.revoke(idCreatedTask3);
     let retrivedTask = await adapter.getById<Task>(idCreatedTask3);
     chai.expect(retrivedTask.state).to.equal(TaskState.MODIFIABLE);
     chai.expect(retrivedTask.assignee).to.equal(undefined);
+    (adapter.stub as any).usercert = p1Identity;
+    let tasks = await taskManagerCtrl.getParticipantsTasks('Participant1');
+    chai.expect(tasks).to.have.length(0);
+  });
+
+  it('should transfer an ownership from Participant2 to Participant1', async () => {
+    (adapter.stub as any).usercert = p2Identity;
+    await taskManagerCtrl.transferOwnership(idCreatedTask3, 'Participant1');
+    let retrivedTask = await adapter.getById<Task>(idCreatedTask3);
+    chai.expect(retrivedTask.owner).to.equal('Participant1');
+  });
+
+  it('should retrive owned tasks', async () => {
+    (adapter.stub as any).usercert = p1Identity;
+    let tasks = await taskManagerCtrl.getOwned('Participant1');
+    chai.expect(tasks).to.have.length(3);
   });
 
   it('should remove a task', async () => {
     await taskManagerCtrl.delete(idCreatedTask3);
     let retrivedTask = await adapter.getById<Task>(idCreatedTask3);
     chai.expect(retrivedTask).to.equal(null);
+    let tasks = await taskManagerCtrl.getOwned('Participant1');
+    chai.expect(tasks).to.have.length(2);
   });
 });

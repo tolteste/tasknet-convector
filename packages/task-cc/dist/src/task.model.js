@@ -46,7 +46,6 @@ var Task = (function (_super) {
         convector_core_model_1.Validate(yup.date())
     ], Task.prototype, "created", void 0);
     tslib_1.__decorate([
-        convector_core_model_1.ReadOnly(),
         convector_core_model_1.Required(),
         convector_core_model_1.Validate(yup.string())
     ], Task.prototype, "owner", void 0);
@@ -63,6 +62,9 @@ var Task = (function (_super) {
     tslib_1.__decorate([
         convector_core_model_1.Validate(yup.array().of(yup.string()))
     ], Task.prototype, "attachments", void 0);
+    tslib_1.__decorate([
+        convector_core_model_1.Validate(yup.array().of(yup.string()))
+    ], Task.prototype, "deliverables", void 0);
     tslib_1.__decorate([
         convector_core_model_1.Validate(yup.number())
     ], Task.prototype, "priority", void 0);

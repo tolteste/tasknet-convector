@@ -22,5 +22,6 @@ export declare class Task extends ConvectorModel<Task> {
     prerequisites: string[];
     due: Date;
     attachments: string[];
+    deliverables: string[];
     priority: Priority;
 }

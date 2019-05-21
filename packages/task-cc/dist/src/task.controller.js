@@ -67,6 +67,7 @@ var TaskController = (function (_super) {
                     case 0: return [4, this.getTask(id)];
                     case 1:
                         task = _a.sent();
+                        util_1.print('\n\n\n' + this.tx.identity.getID() + '\n\n\n');
                         return [4, this.participantIsCaller(task.owner)];
                     case 2:
                         if ((_a.sent()) !== true) {
@@ -92,7 +93,6 @@ var TaskController = (function (_super) {
                         task.priority = priority;
                         task.due = due;
                         task.attachments = attachements;
-                        util_1.print(attachements);
                         return [4, task.save()];
                     case 4:
                         _a.sent();
@@ -129,6 +129,29 @@ var TaskController = (function (_super) {
                         return [4, task.save()];
                     case 5:
                         _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    TaskController.prototype.saveDeliverables = function (taskId, deliverables) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var task;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.getTask(taskId)];
+                    case 1:
+                        task = _a.sent();
+                        return [4, this.participantIsCaller(task.assignee)];
+                    case 2:
+                        if ((_a.sent()) !== true) {
+                            throw new Error("Only assignee can save deliverables.");
+                        }
+                        if (task.state !== task_model_1.TaskState.IN_PROGRESS) {
+                            throw new Error("Can't save deliverables. Task is not IN_PROGRESS.");
+                        }
+                        task.deliverables = deliverables;
+                        task.save();
                         return [2];
                 }
             });
@@ -242,6 +265,38 @@ var TaskController = (function (_super) {
             });
         });
     };
+    TaskController.prototype.transferOwnership = function (taskId, newOwner) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var task, participant;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.getTask(taskId)];
+                    case 1:
+                        task = _a.sent();
+                        return [4, this.participantIsCaller(task.owner)];
+                    case 2:
+                        if ((_a.sent()) !== true ||
+                            this.tx.identity.getAttributeValue('role') === 'admin') {
+                            throw new Error("Only owner can transfer ownership.");
+                        }
+                        if (task.state === task_model_1.TaskState.COMPLETED) {
+                            throw new Error("Can't transfer ownership of completed task.");
+                        }
+                        return [4, participant_cc_1.Participant.getOne(newOwner)];
+                    case 3:
+                        participant = _a.sent();
+                        if (!participant || !participant.id || !participant.identities) {
+                            throw new Error("Participant with id: \"" + newOwner + "\" doesn't exist.");
+                        }
+                        task.owner = newOwner;
+                        return [4, task.save()];
+                    case 4:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
     TaskController.prototype.delete = function (taskId) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var task;
@@ -278,6 +333,64 @@ var TaskController = (function (_super) {
                             throw new Error("No task exists with that ID " + id);
                         }
                         return [2, existing];
+                }
+            });
+        });
+    };
+    TaskController.prototype.getOwned = function (ownerId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var tasks;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.participantIsCaller(ownerId)];
+                    case 1:
+                        if ((_a.sent()) !== true) {
+                            throw new Error("Caller has to be the owner that was passed as a parameter.");
+                        }
+                        return [4, task_model_1.Task.getAll()];
+                    case 2:
+                        tasks = _a.sent();
+                        tasks = tasks.filter(function (task) { return task.owner === ownerId; });
+                        return [2, tasks];
+                }
+            });
+        });
+    };
+    TaskController.prototype.getAssignedTo = function (assignee) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var tasks;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.participantIsCaller(assignee)];
+                    case 1:
+                        if ((_a.sent()) !== true) {
+                            throw new Error("Caller has to be the assignee that was passed as a parameter.");
+                        }
+                        return [4, task_model_1.Task.getAll()];
+                    case 2:
+                        tasks = _a.sent();
+                        tasks = tasks.filter(function (task) { return task.assignee === assignee; });
+                        return [2, tasks];
+                }
+            });
+        });
+    };
+    TaskController.prototype.getParticipantsTasks = function (participant) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var tasks;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.participantIsCaller(participant)];
+                    case 1:
+                        if ((_a.sent()) !== true) {
+                            throw new Error("Caller has to be the assignee that was passed as a parameter.");
+                        }
+                        return [4, task_model_1.Task.getAll()];
+                    case 2:
+                        tasks = _a.sent();
+                        tasks = tasks.filter(function (task) { return (task.assignee === participant) ||
+                            task.owner === participant; });
+                        return [2, tasks];
                 }
             });
         });
@@ -375,6 +488,12 @@ var TaskController = (function (_super) {
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
+        tslib_1.__param(0, convector_core_controller_1.Param(yup.string())),
+        tslib_1.__param(1, convector_core_controller_1.Param(yup.array().of(yup.string())))
+    ], TaskController.prototype, "saveDeliverables", null);
+    tslib_1.__decorate([
+        convector_rest_api_decorators_1.Service(),
+        convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskController.prototype, "passToReview", null);
     tslib_1.__decorate([
@@ -395,13 +514,31 @@ var TaskController = (function (_super) {
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),
+        tslib_1.__param(0, convector_core_controller_1.Param(yup.string())),
+        tslib_1.__param(1, convector_core_controller_1.Param(yup.string()))
+    ], TaskController.prototype, "transferOwnership", null);
+    tslib_1.__decorate([
+        convector_rest_api_decorators_1.Service(),
+        convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
     ], TaskController.prototype, "delete", null);
+    tslib_1.__decorate([
+        convector_core_controller_1.Invokable(),
+        tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
+    ], TaskController.prototype, "get", null);
+    tslib_1.__decorate([
+        convector_core_controller_1.Invokable(),
+        tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
+    ], TaskController.prototype, "getOwned", null);
+    tslib_1.__decorate([
+        convector_core_controller_1.Invokable(),
+        tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
+    ], TaskController.prototype, "getAssignedTo", null);
     tslib_1.__decorate([
         convector_rest_api_decorators_1.GetById('Task'),
         convector_core_controller_1.Invokable(),
         tslib_1.__param(0, convector_core_controller_1.Param(yup.string()))
-    ], TaskController.prototype, "get", null);
+    ], TaskController.prototype, "getParticipantsTasks", null);
     TaskController = tslib_1.__decorate([
         convector_core_controller_1.Controller('Task')
     ], TaskController);

@@ -104,6 +104,7 @@ export class TaskController extends ConvectorController {
     attachements: string[]
   ) {
     const task = await this.getTask(id);
+    print('\n\n\n' + this.tx.identity.getID() + '\n\n\n')
 
     if (await this.participantIsCaller(task.owner) !== true) {
       throw new Error('Only owner of the task is able to make modifications.');
@@ -128,7 +129,6 @@ export class TaskController extends ConvectorController {
     task.priority = priority;
     task.due = due;
     task.attachments = attachements;
-    print(attachements);
     await task.save();
   }
 
@@ -156,6 +156,25 @@ export class TaskController extends ConvectorController {
     task.assignee = assigneeId;
     task.state = TaskState.IN_PROGRESS
     await task.save();
+  }
+
+  @Service()
+  @Invokable()
+  public async saveDeliverables(
+    @Param(yup.string())
+    taskId: string,
+    @Param(yup.array().of(yup.string()))
+    deliverables: string[]
+  ) {
+    const task = await this.getTask(taskId);
+    if (await this.participantIsCaller(task.assignee) !== true) {
+      throw new Error(`Only assignee can save deliverables.`);
+    }
+    if (task.state !== TaskState.IN_PROGRESS) {
+      throw new Error(`Can't save deliverables. Task is not IN_PROGRESS.`);
+    }
+    task.deliverables = deliverables;
+    task.save()
   }
 
   @Service()
@@ -230,6 +249,30 @@ export class TaskController extends ConvectorController {
 
   @Service()
   @Invokable()
+  public async transferOwnership(
+    @Param(yup.string())
+    taskId: string,
+    @Param(yup.string())
+    newOwner: string
+  ) {
+    const task = await this.getTask(taskId);
+    if (await this.participantIsCaller(task.owner) !== true ||
+      this.tx.identity.getAttributeValue('role') === 'admin') {
+      throw new Error(`Only owner can transfer ownership.`);
+    }
+    if (task.state === TaskState.COMPLETED) {
+      throw new Error(`Can't transfer ownership of completed task.`)
+    }
+    const participant = await Participant.getOne(newOwner);
+    if (!participant || !participant.id || !participant.identities) {
+      throw new Error(`Participant with id: "${newOwner}" doesn't exist.`);
+    }
+    task.owner = newOwner;
+    await task.save()
+  }
+
+  @Service()
+  @Invokable()
   public async delete(
     @Param(yup.string())
     taskId: string
@@ -257,6 +300,55 @@ export class TaskController extends ConvectorController {
     return existing;
   }
 
+  //@GetById('Task')
+  @Invokable()
+  public async getOwned(
+    @Param(yup.string())
+    ownerId : string
+  ) {
+    // parameter has to correspond with the caller
+    if(await this.participantIsCaller(ownerId) !== true){
+      throw new Error(`Caller has to be the owner that was passed as a parameter.`)
+    }
+    var tasks = await Task.getAll();
+    // filtering for tasks owned by the supplied participant
+    tasks = tasks.filter(task => task.owner === ownerId)
+    return tasks;
+  }
+
+  //@GetById('Task')
+  @Invokable()
+  public async getAssignedTo(
+    @Param(yup.string())
+    assignee : string
+  ) {
+    // parameter has to correspond with the caller
+    if(await this.participantIsCaller(assignee) !== true){
+      throw new Error(`Caller has to be the assignee that was passed as a parameter.`)
+    }
+    var tasks = await Task.getAll();
+    // filtering for tasks owned by the supplied participant
+    tasks = tasks.filter(task => task.assignee === assignee)
+    return tasks;
+  }
+
+   @GetById('Task')
+   @Invokable()
+   public async getParticipantsTasks(
+     @Param(yup.string())
+     participant : string
+   ) {
+     // parameter has to correspond with the caller
+     if(await this.participantIsCaller(participant) !== true){
+       throw new Error(`Caller has to be the assignee that was passed as a parameter.`)
+     }
+     var tasks = await Task.getAll();
+     // filtering for tasks owned by the supplied participant
+     tasks = tasks.filter(task => (task.assignee === participant) || 
+     task.owner === participant)
+     return tasks;
+   }
+ 
   //========================================================================
   //=======================SUPPORT FUNCTIONS================================
   //========================================================================

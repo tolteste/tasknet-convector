@@ -60,9 +60,13 @@ fingerprint: a_text} ]
          - description
          - state
          - created
-         - creator
+         - owner
          - assignee
          - prerequisites
+         - due
+         - attachments
+         - deliverables
+         - priority
       properties:
         id:
           type: string
@@ -85,7 +89,7 @@ fingerprint: a_text} ]
         created:
           type: number
           example: 123
-        creator:
+        owner:
           type: string
           example: a_text
         assignee:
@@ -96,6 +100,26 @@ fingerprint: a_text} ]
           items:
             type: string
           example: [ a_text, a_text ]
+        due:
+          type: Date
+          example: {}
+        attachments:
+          type: array
+          items:
+            type: string
+          example: [ a_text, a_text ]
+        deliverables:
+          type: array
+          items:
+            type: string
+          example: [ a_text, a_text ]
+        priority:
+          type: integer
+          enum:
+              - 0
+              - 1
+              - 2
+          example: 0
    
 
     participant_registerBody:
@@ -129,8 +153,11 @@ fingerprint: a_text} ]
           - id
           - title
           - description
-          - creatorId
+          - priority
+          - due
+          - ownerId
           - prereq
+          - attachements
        properties:
          id:
            type: string
@@ -141,10 +168,21 @@ fingerprint: a_text} ]
          description:
            type: string
            example: a_text
-         creatorId:
+         priority:
+           type: Priority
+           example: {}
+         due:
+           type: Date
+           example: {}
+         ownerId:
            type: string
            example: a_text
          prereq:
+           type: array
+           items:
+            type: string
+           example: [a_text, a_text]
+         attachements:
            type: array
            items:
             type: string
@@ -157,7 +195,10 @@ fingerprint: a_text} ]
           - id
           - title
           - description
+          - priority
+          - due
           - prereq
+          - attachements
        properties:
          id:
            type: string
@@ -168,7 +209,18 @@ fingerprint: a_text} ]
          description:
            type: string
            example: a_text
+         priority:
+           type: Priority
+           example: {}
+         due:
+           type: Date
+           example: {}
          prereq:
+           type: array
+           items:
+            type: string
+           example: [a_text, a_text]
+         attachements:
            type: array
            items:
             type: string
@@ -187,6 +239,22 @@ fingerprint: a_text} ]
          assigneeId:
            type: string
            example: a_text
+
+    task_saveDeliverablesBody:
+       type: object
+       title: task_saveDeliverablesParams
+       required:
+          - taskId
+          - deliverables
+       properties:
+         taskId:
+           type: string
+           example: a_text
+         deliverables:
+           type: array
+           items:
+            type: string
+           example: [a_text, a_text]
 
     task_passToReviewBody:
        type: object
@@ -225,6 +293,20 @@ fingerprint: a_text} ]
           - taskId
        properties:
          taskId:
+           type: string
+           example: a_text
+
+    task_transferOwnershipBody:
+       type: object
+       title: task_transferOwnershipParams
+       required:
+          - taskId
+          - newOwner
+       properties:
+         taskId:
+           type: string
+           example: a_text
+         newOwner:
            type: string
            example: a_text
 
@@ -367,6 +449,24 @@ paths:
           description: assign raised an exception
 
 
+  /task/saveDeliverables:
+    post:
+      tags:
+        - saveDeliverables
+      description: saveDeliverables
+      parameters:
+        - name: task_saveDeliverablesParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/task_saveDeliverablesBody"
+      responses:
+        200:
+          description: saveDeliverables executed correctly
+        500:
+          description: saveDeliverables raised an exception
+
+
   /task/passToReview:
     post:
       tags:
@@ -437,6 +537,24 @@ paths:
           description: rework executed correctly
         500:
           description: rework raised an exception
+
+
+  /task/transferOwnership:
+    post:
+      tags:
+        - transferOwnership
+      description: transferOwnership
+      parameters:
+        - name: task_transferOwnershipParams
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/task_transferOwnershipBody"
+      responses:
+        200:
+          description: transferOwnership executed correctly
+        500:
+          description: transferOwnership raised an exception
 
 
   /task/delete:

@@ -43,7 +43,6 @@ export class Task extends ConvectorModel<Task> {
   @Validate(yup.date())
   public created: number;
 
-  @ReadOnly()
   @Required()
   @Validate(yup.string())
   public owner: string;
@@ -60,6 +59,9 @@ export class Task extends ConvectorModel<Task> {
 
   @Validate(yup.array().of(yup.string()))
   public attachments: string[];
+
+  @Validate(yup.array().of(yup.string()))
+  public deliverables: string[];
 
   @Validate(yup.number())
   public priority: Priority;

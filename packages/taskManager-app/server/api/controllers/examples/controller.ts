@@ -50,9 +50,9 @@ export class Controller {
 
 
 
-  async task_get(req: Request, res: Response) {
+  async task_getParticipantsTasks(req: Request, res: Response) {
     let cntrl = await TaskControllerClient.init();
-    let result = await cntrl.get(req.params.id);
+    let result = await cntrl.getParticipantsTasks(req.params.id);
     if (!result) {
       return res.status(404);
     }
@@ -64,7 +64,7 @@ export class Controller {
       let cntrl = await TaskControllerClient.init();
       let params = req.body;
       
-      let returnObject = await cntrl.create(params.id,params.title,params.description,params.creatorId,params.prereq);
+      let returnObject = await cntrl.create(params.id,params.title,params.description,params.priority,params.due,params.ownerId,params.prereq,params.attachements);
       if (returnObject === undefined) {
         return res.status(404);
       }
@@ -80,7 +80,7 @@ export class Controller {
       let cntrl = await TaskControllerClient.init();
       let params = req.body;
       
-      let returnObject = await cntrl.modify(params.id,params.title,params.description,params.prereq);
+      let returnObject = await cntrl.modify(params.id,params.title,params.description,params.priority,params.due,params.prereq,params.attachements);
       if (returnObject === undefined) {
         return res.status(404);
       }
@@ -97,6 +97,22 @@ export class Controller {
       let params = req.body;
       
       let returnObject = await cntrl.assign(params.taskId,params.assigneeId);
+      if (returnObject === undefined) {
+        return res.status(404);
+      }
+      res.json(returnObject);
+    } catch (ex) {
+      console.log(ex.message, ex.stack);
+      res.status(500).send(ex.stack);
+    }
+  }
+
+  async task_saveDeliverables(req: Request, res: Response) {
+    try {
+      let cntrl = await TaskControllerClient.init();
+      let params = req.body;
+      
+      let returnObject = await cntrl.saveDeliverables(params.taskId,params.deliverables);
       if (returnObject === undefined) {
         return res.status(404);
       }
@@ -161,6 +177,22 @@ export class Controller {
       let params = req.body;
       
       let returnObject = await cntrl.rework(params.taskId);
+      if (returnObject === undefined) {
+        return res.status(404);
+      }
+      res.json(returnObject);
+    } catch (ex) {
+      console.log(ex.message, ex.stack);
+      res.status(500).send(ex.stack);
+    }
+  }
+
+  async task_transferOwnership(req: Request, res: Response) {
+    try {
+      let cntrl = await TaskControllerClient.init();
+      let params = req.body;
+      
+      let returnObject = await cntrl.transferOwnership(params.taskId,params.newOwner);
       if (returnObject === undefined) {
         return res.status(404);
       }
