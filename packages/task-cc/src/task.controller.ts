@@ -14,7 +14,6 @@ import {
 } from '@worldsibu/convector-rest-api-decorators';
 import { Task, TaskState, Priority } from './task.model';
 import { Participant } from 'participant-cc';
-import { stringify } from 'querystring';
 import { print } from 'util';
 
 @Controller('Task')
