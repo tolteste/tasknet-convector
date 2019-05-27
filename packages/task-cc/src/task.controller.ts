@@ -14,7 +14,6 @@ import {
 } from '@worldsibu/convector-rest-api-decorators';
 import { Task, TaskState, Priority } from './task.model';
 import { Participant } from 'participant-cc';
-import { print } from 'util';
 
 @Controller('Task')
 export class TaskController extends ConvectorController {
@@ -93,7 +92,6 @@ export class TaskController extends ConvectorController {
     description: string,
     @Param(yup.number())
     priority: Priority,
-    //validation through regexp since yup does not support date validation for Date objects
     @Param(yup.date())
     due: string,
     @Param(yup.array())
@@ -102,7 +100,6 @@ export class TaskController extends ConvectorController {
     attachements: string[]
   ) {
     const task = await this.getTask(id);
-    print('\n\n\n' + this.tx.identity.getID() + '\n\n\n')
 
     if (await this.participantIsCaller(task.owner) !== true) {
       throw new Error('Only owner of the task is able to make modifications.');
@@ -254,8 +251,7 @@ export class TaskController extends ConvectorController {
     newOwner: string
   ) {
     const task = await this.getTask(taskId);
-    if (await this.participantIsCaller(task.owner) !== true ||
-      this.tx.identity.getAttributeValue('role') === 'admin') {
+    if (await this.participantIsCaller(task.owner) !== true || this.isAdmin()) {
       throw new Error(`Only owner can transfer ownership.`);
     }
     if (task.state === TaskState.COMPLETED) {
@@ -295,17 +291,23 @@ export class TaskController extends ConvectorController {
     if (!existing || !existing.id) {
       throw new Error(`No task exists with that ID ${id}`);
     }
-    return existing;
+    if (this.participantIsCaller(existing.owner) ||
+      this.participantIsCaller(existing.assignee) ||
+      this.isAdmin()) {
+      return existing;
+    } else {
+      throw new Error(`Caller is not allowed to perform this action.`)
+    }
   }
 
   @GetById('Task')
   @Invokable()
   public async getOwned(
     @Param(yup.string())
-    ownerId : string
+    ownerId: string
   ) {
     // parameter has to correspond with the caller
-    if(await this.participantIsCaller(ownerId) !== true){
+    if (await this.participantIsCaller(ownerId) !== true) {
       throw new Error(`Caller has to be the owner that was passed as a parameter.`)
     }
     var tasks = await Task.getAll();
@@ -318,10 +320,10 @@ export class TaskController extends ConvectorController {
   @Invokable()
   public async getAssignedTo(
     @Param(yup.string())
-    assignee : string
+    assignee: string
   ) {
     // parameter has to correspond with the caller
-    if(await this.participantIsCaller(assignee) !== true){
+    if (await this.participantIsCaller(assignee) !== true) {
       throw new Error(`Caller has to be the assignee that was passed as a parameter.`)
     }
     var tasks = await Task.getAll();
@@ -329,7 +331,7 @@ export class TaskController extends ConvectorController {
     tasks = tasks.filter(task => task.assignee === assignee)
     return tasks;
   }
- 
+
   //========================================================================
   //=======================SUPPORT FUNCTIONS================================
   //========================================================================
@@ -340,6 +342,13 @@ export class TaskController extends ConvectorController {
       throw new Error(`Task with id: "${id}" doesn't exist.`);
     }
     return task;
+  }
+
+  private isAdmin() {
+    if (this.tx.identity.getAttributeValue('role') === 'admin') {
+      return true;
+    }
+    return false
   }
 
   private async participantIsCaller(participantId: string) {

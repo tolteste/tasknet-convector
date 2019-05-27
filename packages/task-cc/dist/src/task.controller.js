@@ -6,7 +6,6 @@ var convector_core_controller_1 = require("@worldsibu/convector-core-controller"
 var convector_rest_api_decorators_1 = require("@worldsibu/convector-rest-api-decorators");
 var task_model_1 = require("./task.model");
 var participant_cc_1 = require("participant-cc");
-var util_1 = require("util");
 var TaskController = (function (_super) {
     tslib_1.__extends(TaskController, _super);
     function TaskController() {
@@ -67,7 +66,6 @@ var TaskController = (function (_super) {
                     case 0: return [4, this.getTask(id)];
                     case 1:
                         task = _a.sent();
-                        util_1.print('\n\n\n' + this.tx.identity.getID() + '\n\n\n');
                         return [4, this.participantIsCaller(task.owner)];
                     case 2:
                         if ((_a.sent()) !== true) {
