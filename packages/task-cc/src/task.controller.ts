@@ -14,6 +14,8 @@ import {
 } from '@worldsibu/convector-rest-api-decorators';
 import { Task, TaskState, Priority } from './task.model';
 import { Participant } from 'participant-cc';
+import { ClientIdentity } from 'fabric-shim';
+import { BaseStorage } from '@worldsibu/convector-core-storage';
 
 @Controller('Task')
 export class TaskController extends ConvectorController {
@@ -345,7 +347,8 @@ export class TaskController extends ConvectorController {
   }
 
   private isAdmin() {
-    if (this.tx.identity.getAttributeValue('role') === 'admin') {
+    let isAdmin = this.fullIdentity.getAttributeValue('admin');
+    if (isAdmin) {
       return true;
     }
     return false
@@ -378,4 +381,9 @@ export class TaskController extends ConvectorController {
     });
     return true;
   }
+
+  get fullIdentity(): ClientIdentity {
+    const stub = (BaseStorage.current as any).stubHelper;
+    return new ClientIdentity(stub.getStub());
+  };
 }

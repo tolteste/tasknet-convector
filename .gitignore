@@ -62,3 +62,6 @@ typings/
 
 #generated chaincode 
 chaincode-taskManager
+
+#generated files from typescript
+dist

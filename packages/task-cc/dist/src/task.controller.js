@@ -6,6 +6,8 @@ var convector_core_controller_1 = require("@worldsibu/convector-core-controller"
 var convector_rest_api_decorators_1 = require("@worldsibu/convector-rest-api-decorators");
 var task_model_1 = require("./task.model");
 var participant_cc_1 = require("participant-cc");
+var fabric_shim_1 = require("fabric-shim");
+var convector_core_storage_1 = require("@worldsibu/convector-core-storage");
 var TaskController = (function (_super) {
     tslib_1.__extends(TaskController, _super);
     function TaskController() {
@@ -273,8 +275,7 @@ var TaskController = (function (_super) {
                         task = _a.sent();
                         return [4, this.participantIsCaller(task.owner)];
                     case 2:
-                        if ((_a.sent()) !== true ||
-                            this.tx.identity.getAttributeValue('role') === 'admin') {
+                        if ((_a.sent()) !== true || this.isAdmin()) {
                             throw new Error("Only owner can transfer ownership.");
                         }
                         if (task.state === task_model_1.TaskState.COMPLETED) {
@@ -330,7 +331,15 @@ var TaskController = (function (_super) {
                         if (!existing || !existing.id) {
                             throw new Error("No task exists with that ID " + id);
                         }
-                        return [2, existing];
+                        if (this.participantIsCaller(existing.owner) ||
+                            this.participantIsCaller(existing.assignee) ||
+                            this.isAdmin()) {
+                            return [2, existing];
+                        }
+                        else {
+                            throw new Error("Caller is not allowed to perform this action.");
+                        }
+                        return [2];
                 }
             });
         });
@@ -389,6 +398,13 @@ var TaskController = (function (_super) {
             });
         });
     };
+    TaskController.prototype.isAdmin = function () {
+        var isAdmin = this.fullIdentity.getAttributeValue('admin');
+        if (isAdmin) {
+            return true;
+        }
+        return false;
+    };
     TaskController.prototype.participantIsCaller = function (participantId) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var participant, activeIdentity;
@@ -434,6 +450,15 @@ var TaskController = (function (_super) {
             });
         });
     };
+    Object.defineProperty(TaskController.prototype, "fullIdentity", {
+        get: function () {
+            var stub = convector_core_storage_1.BaseStorage.current.stubHelper;
+            return new fabric_shim_1.ClientIdentity(stub.getStub());
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
     tslib_1.__decorate([
         convector_rest_api_decorators_1.Service(),
         convector_core_controller_1.Invokable(),

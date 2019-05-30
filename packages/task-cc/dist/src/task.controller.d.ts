@@ -1,5 +1,6 @@
 import { ConvectorController } from '@worldsibu/convector-core-controller';
 import { Task, Priority } from './task.model';
+import { ClientIdentity } from 'fabric-shim';
 export declare class TaskController extends ConvectorController {
     create(id: string, title: string, description: string, priority: Priority, due: string, ownerId: string, prereq: string[], attachments: string[]): Promise<void>;
     modify(id: string, title: string, description: string, priority: Priority, due: string, prereq: string[], attachements: string[]): Promise<void>;
@@ -15,6 +16,8 @@ export declare class TaskController extends ConvectorController {
     getOwned(ownerId: string): Promise<Task[]>;
     getAssignedTo(assignee: string): Promise<Task[]>;
     private getTask;
+    private isAdmin;
     private participantIsCaller;
     private arePrerequisitesValid;
+    readonly fullIdentity: ClientIdentity;
 }
