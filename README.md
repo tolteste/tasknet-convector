@@ -1,11 +1,11 @@
 # tasknetConvector - taskManager
 
-This project is a part of a thesis implementation made by Štefan Töltési. Thesis is called Distributed Tamper Proof Task Manager and it was created for University of Southern Denmark. Project can be also found in <a href="https://github.com/tolteste/tasknet-convector" target="_blank">Github repository</a>.
+This project is a part of a thesis implementation made by Štefan Töltési. Thesis is called Distributed Tamper Proof Task Manager and it was created for University of Southern Denmark. Project can be also found in <a href="https://github.com/tolteste/tasknet-convector" target="_blank">Github repository</a>. Following instructions are written for Linux based operating system.
 
 ## Prerequisites 
 To run the project Hyperledger Fabric's prerequisites have to be installed. Instalation guide can be found on <a href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/prereqs.html">Hyperldger website</a>.
 
-Also npm and node.js have to be installed.
+Another prerequisites are npm and node.js.
 
 ## Start
 
@@ -22,7 +22,7 @@ npm run cc:start
 hurl invoke taskManager taskManager_create "{ parameters }"
 ```
 
-Running 'env:restart' command 
+Running `env:restart` command downloads Hyperledger Fabric docker images and creates organization and participants according to the .config.json files in the root folder. Created files are by default saved into a `$HOME/hyperledger-fabric-network` folder.
 
 ## Docker
 ```
