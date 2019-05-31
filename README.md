@@ -1,7 +1,11 @@
 # tasknetConvector - taskManager
 
-This awesome project was created automatically with <a href="https://github.com/worldsibu/convector-cli" target="_blank">Convector CLI</a>.
-By default new Convector projects locally include <a href="https://github.com/worldsibu/hurley">Hurley</a> to manage your development environment seamlessly, so you don't have to worry about setting up the network and hard ways to install  and upgrade your chaincodes.
+This project is a part of a thesis implementation made by Štefan Töltési. Thesis is called Distributed Tamper Proof Task Manager and it was created for University of Southern Denmark. Project can be also found in <a href="https://github.com/tolteste/tasknet-convector" target="_blank">Github repository</a>.
+
+## Prerequisites 
+To run the project Hyperledger Fabric's prerequisites have to be installed. Instalation guide can be found on <a href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/prereqs.html">Hyperldger website</a>.
+
+Also npm and node.js have to be installed.
 
 ## Start
 
@@ -10,92 +14,32 @@ By default new Convector projects locally include <a href="https://github.com/wo
 npm i
 # Create a new development blockchain network  - From the root of your project
 npm run env:restart
-# Install your smart contract
-npm run cc:start -- taskManager
+# Install smart contract onto the blockchain network
+npm run cc:start
 # Make a testing call to create a record in the ledger
 # Beware that the first call may fail with a timeout! Just happens the first time
-hurl invoke taskManager taskManager_create "{\"name\":\"my first request\",\"id\":\"0001\",\"created\":0,\"modified\":0}"
+# Chaincode can be invoked with hurl
+hurl invoke taskManager taskManager_create "{ parameters }"
 ```
 
-## About Hurley
-
-You may as well install **Hurley** globally for easier and more flexible management. 
-
-`npm i -g @worldsibu/hurley`
-
-Since with Hurley globally you have control over everything, some things that you can do, for example, is installing a Convector Smart Contract with a different name than the one you used for your project.
-
+## Docker
 ```
-# Use the same package
-# Install a new chaincode with the same source code but the name 'anothernameforyourcc'
-hurl install anothernameforyourcc node
+# When blockchain network has been started, Hyperledger's nodes can be seen running in Docker
+docker ps
+# To see nodes log output run following command
+docker logs $(docker ps -qa | head -n 1) -f
 ```
 
-Other complex tasks you may need is installing to a different channel.
-
-```
-# Use the same package
-# Be sure you started your environment with more than one channel running 'hurl new --channels 2'. Otherwise this will throw an error.
-hurl install anothernameforyourcc node --channel ch2
-```
-
----
-
-If you don't want to, don't worries! This project works right away.
-
-## Start - if you have Hurley globally
-
-### Bring your project to life 
-
-```
-# Install dependencies - From the root of your project
-npm i
-# Create a new development blockchain network  - From the root of your project
-hurl new
-```
-
-###  Install and upgrade chaincodes
-
-```
-# Package your smart contract's code  - From the root of your project
-npm run cc:package -- taskManager org1
-# Install to your blockchain - From the root of your project
-hurl install taskManager node -P ./chaincode-taskManager
-
-# Upgrade your existing chaincode - From the root of your project
-hurl upgrade taskManager node 1.2 -P ./chaincode-taskManager
-```
-
-## Start - if you don't have Hurley globally
-
-### Bring your project to life 
-
-```
-# Install dependencies - From the root of your project
-npm i
-# Create a new development blockchain network  - From the root of your project
-npm run env:restart
-```
-
-###  Install and upgrade chaincodes
-
-```
-# Install to your blockchain - From the root of your project
-npm run cc:start -- taskManager
-
-# Upgrade your existing chaincode - From the root of your project
-npm run cc:upgrade -- taskManager 1.2
-```
-
-## Tests
+## Run chaincode unit tests
 
 ```
 npm run test
 ```
 
-> Check all the information to work with Convector <a href="https://worldsibu.github.io/convector" target="_blank">in the DOCS site</a>.
-
-## Collaborate to the Convector Suite projects
-
-* <a href="https://discord.gg/twRwpWt" target="_blank">Discord chat with the community</a>
-* <a href="https://github.com/worldsibu" target="_blank">Convector projects</a>
+## Starting TaskManager Node.js application
+```
+# First the application has to be compiled
+npx lerna run compile --scope taskManager-app
+# Now run the application
+npx lerna run start --scope taskManager-app --stream
+# Server is now running and interactive API can be accessed on 
