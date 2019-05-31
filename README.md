@@ -42,4 +42,4 @@ npm run test
 npx lerna run compile --scope taskManager-app
 # Now run the application
 npx lerna run start --scope taskManager-app --stream
-# Server is now running and interactive API can be accessed on 
+# Server is now running and interactive API can be accessed on http://localhost:3001/
