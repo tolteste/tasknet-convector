@@ -94,7 +94,7 @@ fingerprint: a_text} ]
           example: a_text
         assignee:
           type: string
-          example: a_text
+          example: registeredParticipantId
         prerequisites:
           type: array
           items:
@@ -102,12 +102,12 @@ fingerprint: a_text} ]
           example: [ a_text, a_text ]
         due:
           type: Date
-          example: {}
+          example: {"020-12-17T02:24:00.000Z"}
         attachments:
           type: array
           items:
             type: string
-          example: [ a_text, a_text ]
+          example: [ "hash_of_a_file", "efijwife"]
         deliverables:
           type: array
           items:
@@ -169,8 +169,8 @@ fingerprint: a_text} ]
            type: string
            example: a_text
          priority:
-           type: Priority
-           example: {}
+           type: integer
+           example: 1
          due:
            type: string
            example: a_text
