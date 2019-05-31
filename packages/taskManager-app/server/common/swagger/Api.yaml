@@ -101,8 +101,8 @@ fingerprint: a_text} ]
             type: string
           example: [ a_text, a_text ]
         due:
-          type: Date
-          example: {"020-12-17T02:24:00.000Z"}
+          type: string
+          example: "020-12-17T02:24:00.000Z"
         attachments:
           type: array
           items:
@@ -173,7 +173,7 @@ fingerprint: a_text} ]
            example: 1
          due:
            type: string
-           example: a_text
+           example: 020-12-17T02:24:00.000Z
          ownerId:
            type: string
            example: a_text
@@ -210,11 +210,11 @@ fingerprint: a_text} ]
            type: string
            example: a_text
          priority:
-           type: Priority
-           example: {}
+           type: integer
+           example: 1
          due:
            type: string
-           example: a_text
+           example: 020-12-17T02:24:00.000Z
          prereq:
            type: array
            items:
