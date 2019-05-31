@@ -22,6 +22,8 @@ npm run cc:start
 hurl invoke taskManager taskManager_create "{ parameters }"
 ```
 
+Running 'env:restart' command 
+
 ## Docker
 ```
 # When blockchain network has been started, Hyperledger's nodes can be seen running in Docker
