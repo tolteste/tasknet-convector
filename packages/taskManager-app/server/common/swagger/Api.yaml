@@ -102,7 +102,7 @@ fingerprint: a_text} ]
           example: [ a_text, a_text ]
         due:
           type: string
-          example: "020-12-17T02:24:00.000Z"
+          example: "2020-12-17T02:24:00.000Z"
         attachments:
           type: array
           items:
@@ -173,7 +173,7 @@ fingerprint: a_text} ]
            example: 1
          due:
            type: string
-           example: 020-12-17T02:24:00.000Z
+           example: 2020-12-17T02:24:00.000Z
          ownerId:
            type: string
            example: a_text
@@ -214,7 +214,7 @@ fingerprint: a_text} ]
            example: 1
          due:
            type: string
-           example: 020-12-17T02:24:00.000Z
+           example: 2020-12-17T02:24:00.000Z
          prereq:
            type: array
            items:
