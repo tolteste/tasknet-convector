@@ -77,6 +77,24 @@ export class Controller {
     res.json(result);
   }
 
+  async task_getAll(req: Request, res: Response) {
+    let cntrl = await TaskControllerClient.init();
+    let result = await cntrl.getAll();
+    if (!result) {
+      return res.status(404);
+    }
+    res.json(result);
+  }
+
+  async task_getUnassigned(req: Request, res: Response) {
+    let cntrl = await TaskControllerClient.init();
+    let result = await cntrl.getUnassigned();
+    if (!result) {
+      return res.status(404);
+    }
+    res.json(result);
+  }
+
   async task_create(req: Request, res: Response) {
     try {
       let cntrl = await TaskControllerClient.init();

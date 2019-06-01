@@ -183,6 +183,11 @@ describe('Task', () => {
     chai.expect(tasks).to.have.length(0);
   });
 
+  it('should retrive not assigned tasks', async () => {
+    let tasks = await taskManagerCtrl.getUnassigned();
+    expect(tasks).to.have.length(2);
+  });
+
   it('should transfer an ownership from Participant2 to Participant1', async () => {
     (adapter.stub as any).usercert = p2Identity;
     await taskManagerCtrl.transferOwnership(idCreatedTask3, 'Participant1');

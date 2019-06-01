@@ -253,7 +253,7 @@ export class TaskController extends ConvectorController {
     newOwner: string
   ) {
     const task = await this.getTask(taskId);
-    if (await this.participantIsCaller(task.owner) !== true || this.isAdmin()) {
+    if (await this.participantIsCaller(task.owner) !== true) {
       throw new Error(`Only owner can transfer ownership.`);
     }
     if (task.state === TaskState.COMPLETED) {
@@ -294,8 +294,7 @@ export class TaskController extends ConvectorController {
       throw new Error(`No task exists with that ID ${id}`);
     }
     if (this.participantIsCaller(existing.owner) ||
-      this.participantIsCaller(existing.assignee) ||
-      this.isAdmin()) {
+      this.participantIsCaller(existing.assignee)) {
       return existing;
     } else {
       throw new Error(`Caller is not allowed to perform this action.`)
@@ -334,6 +333,25 @@ export class TaskController extends ConvectorController {
     return tasks;
   }
 
+  @Invokable()
+  public async getAll() {
+    // parameter has to correspond with the caller
+    if (!this.isAdmin) {
+      throw new Error(`Only admin can view all tasks.`)
+    }
+    var tasks = await Task.getAll();
+    return tasks;
+  }
+
+  @Invokable()
+  public async getUnassigned() {
+    var tasks = await Task.getAll();
+    // filtering for tasks owned by the supplied participant
+    tasks = tasks.filter(task => typeof task.assignee === 'undefined')
+    return tasks;
+  }
+
+
   //========================================================================
   //=======================SUPPORT FUNCTIONS================================
   //========================================================================
@@ -356,6 +374,9 @@ export class TaskController extends ConvectorController {
 
   private async participantIsCaller(participantId: string) {
     const participant = await Participant.getOne(participantId);
+    if (this.isAdmin()) {
+      return true;
+    }
     if (!participant || !participant.id || !participant.identities) {
       throw new Error(`Participant with id: "${participantId}" doesn't exist.`);
     }

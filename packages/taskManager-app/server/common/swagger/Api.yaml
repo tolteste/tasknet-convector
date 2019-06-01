@@ -425,7 +425,26 @@ paths:
           description: Return the task with the specified id
         404:
           description: Task not found 
+        
+  /task/tasks:
+    get:
+      tags:
+        - Tasks
+      responses:
+        200:
+          description: Return the tasks
+        404:
+          description: Tasks not found 
 
+  /task/unassigned:
+    get:
+      tags:
+        - Tasks
+      responses:
+        200:
+          description: Return unassigned tasks
+        404:
+          description: Tasks not found 
 
   /task/create:
     post:
