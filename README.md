@@ -47,3 +47,6 @@ npx lerna run start --scope taskManager-app --stream
 ```
 
 Server is now running and an interactive API can be accessed on http://localhost:3001/. By default an identity of an admin from org1 is used. To use a different identity application has to be supplied with a defferent certificate in `.env` file located in `taskManager-app` folder.
+
+##View transactions and blocks
+To see validated transaction and individual blocks of the blockchain, user can utilise byzantine-browser available from [GitHub](https://github.com/worldsibu/byzantine-browser)
