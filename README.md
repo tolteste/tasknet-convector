@@ -1,6 +1,6 @@
 # tasknetConvector - taskManager
 
-This project is a part of a thesis implementation made by Štefan Töltési. Thesis is called Distributed Tamper Proof Task Manager and it was created for University of Southern Denmark. Project can be also found in <a href="https://github.com/tolteste/tasknet-convector" target="_blank">Github repository</a>. Following instructions are written for Linux based operating system.
+This project is a part of a thesis implementation made by Štefan Töltési. Thesis is called Distributed Tamper Proof Task Manager and it was created for University of Southern Denmark. Following instructions are written for Linux based operating system.
 
 ## Prerequisites 
 To run the project Hyperledger Fabric's prerequisites have to be installed. Instalation guide can be found on <a href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/prereqs.html">Hyperldger website</a>.
